@@ -7,6 +7,4 @@ export default function App() {
   return(
     <SafeAreaView style={{ ...StyleSheet.absoluteFillObject }}><Map/></SafeAreaView>
   );
-    
 }
-
