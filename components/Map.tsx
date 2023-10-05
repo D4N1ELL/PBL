@@ -1,9 +1,12 @@
 import { StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import MapView, {Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, {LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
-export default function Map() {
+export default function Map(props) {
   const [hotspots, setHotspots] = useState([]);
+
+
+
 
   useEffect(() => {
     // Fetch the hotspot data
@@ -24,7 +27,10 @@ export default function Map() {
   }, []);
 
     return (
-    <MapView provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }}>
+    <MapView
+      provider={PROVIDER_GOOGLE} 
+      style={{ ...StyleSheet.absoluteFillObject }}
+      onLongPress={props.lph}>
       {/* Map over the hotspots array and create a marker for each hotspot */}
       {hotspots.map((hotspot) => (
         <Marker
@@ -35,6 +41,7 @@ export default function Map() {
           }}
           title={hotspot.title}
           description={hotspot.description}
+          
         />
       ))}
     </MapView>  
