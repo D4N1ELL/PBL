@@ -3,16 +3,7 @@ import Map from './components/Map';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native';
 
-<Modal
-  animated
-  animationType="fade"
-  visible={this.props.visible}
-  transparent
-  onRequestClose={() => this._handleDismiss()}>
-  <View style={styles.overlay}>
-    ...
-  </View>
-</Modal>
+
 
 export default function App() {
   const longPressHandler = (event) => {
