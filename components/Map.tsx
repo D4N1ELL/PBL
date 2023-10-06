@@ -57,9 +57,9 @@ function CustomCalloutView({ hotspot }) {
       <Text style={{ color: 'red' }}>{hotspot.description}</Text>
       
         <WebView
-          source={{ uri: 'https://visit.chisinau.md/wp-content/uploads/2021/09/pe8-4.jpg' }}
+          source={{ uri: 'http://49.13.85.200:8080/static' }}
           style={styles.calloutImage}
-          onError={(error) => console.error('Image Error:', error.nativeEvent.error)}
+          
         />
       
     </View>
@@ -69,7 +69,7 @@ function CustomCalloutView({ hotspot }) {
 const styles = StyleSheet.create({
   customCallout: {
     backgroundColor: 'white',
-    borderRadius: 10, // Adjust the border radius for a different shape
+    borderRadius: 20, // Adjust the border radius for a different shape
     padding: 10,
     borderWidth: 1, // Add a border if desired
     borderColor: 'gray', // Border color
