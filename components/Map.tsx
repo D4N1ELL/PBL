@@ -1,12 +1,11 @@
-import { StyleSheet , Text, View} from 'react-native';
+import { StyleSheet , Text, View,Image} from 'react-native';
 import React, { useEffect, useState } from 'react';
-import MapView, {LongPressEvent, Marker, PROVIDER_GOOGLE , Callout} from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE , Callout} from 'react-native-maps';
+import { WebView } from 'react-native-webview';
 
 export default function Map(props) {
   const [hotspots, setHotspots] = useState([]);
   const [selectedHotspot, setSelectedHotspot] = useState(null);
-
-
 
   useEffect(() => {
     // Fetch the hotspot data
@@ -40,8 +39,9 @@ export default function Map(props) {
             latitude: hotspot.latitude,
             longitude: hotspot.longitude,
           }}
+          onPress={() => setSelectedHotspot(hotspot)}
         >
-          <Callout style={{ borderRadius: 100 }}>
+          <Callout tooltip={true}>
             <CustomCalloutView hotspot={hotspot} />
           </Callout>
         </Marker>
@@ -53,15 +53,22 @@ export default function Map(props) {
 function CustomCalloutView({ hotspot }) {
   return (
     <View style={styles.customCallout}>
-      <Text style={{ color: 'red' }}>{hotspot.title}</Text>
+      <Text style={styles.calloutTitle}>{hotspot.title}</Text>
       <Text style={{ color: 'red' }}>{hotspot.description}</Text>
+      
+        <WebView
+          source={{ uri: 'https://visit.chisinau.md/wp-content/uploads/2021/09/pe8-4.jpg' }}
+          style={styles.calloutImage}
+          onError={(error) => console.error('Image Error:', error.nativeEvent.error)}
+        />
+      
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   customCallout: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'white',
     borderRadius: 10, // Adjust the border radius for a different shape
     padding: 10,
     borderWidth: 1, // Add a border if desired
@@ -70,5 +77,23 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     elevation: 5,
+    alignItems: 'center',
   },
+  calloutTitle: {
+    color: 'red',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center', // Center the text horizontally
+  },
+  calloutImage: {
+    width: 200,
+    height: 200,
+    marginTop: 2,
+  },
+  imageContainer: {
+    alignItems: 'center', // Center horizontally
+    justifyContent: 'center', // Center vertically
+    
+  },
+
 });
