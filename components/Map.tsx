@@ -1,10 +1,10 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet , Text, View} from 'react-native';
 import React, { useEffect, useState } from 'react';
-import MapView, {LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, {LongPressEvent, Marker, PROVIDER_GOOGLE , Callout} from 'react-native-maps';
 
 export default function Map(props) {
   const [hotspots, setHotspots] = useState([]);
-
+  const [selectedHotspot, setSelectedHotspot] = useState(null);
 
 
 
@@ -26,11 +26,12 @@ export default function Map(props) {
       });
   }, []);
 
-    return (
+  return (
     <MapView
       provider={PROVIDER_GOOGLE} 
       style={{ ...StyleSheet.absoluteFillObject }}
-      onLongPress={props.lph}>
+      onLongPress={props.lph}
+    >
       {/* Map over the hotspots array and create a marker for each hotspot */}
       {hotspots.map((hotspot) => (
         <Marker
@@ -39,11 +40,35 @@ export default function Map(props) {
             latitude: hotspot.latitude,
             longitude: hotspot.longitude,
           }}
-          title={hotspot.title}
-          description={hotspot.description}
-          
-        />
+        >
+          <Callout style={{ borderRadius: 100 }}>
+            <CustomCalloutView hotspot={hotspot} />
+          </Callout>
+        </Marker>
       ))}
     </MapView>  
   );
 }
+
+function CustomCalloutView({ hotspot }) {
+  return (
+    <View style={styles.customCallout}>
+      <Text style={{ color: 'red' }}>{hotspot.title}</Text>
+      <Text style={{ color: 'red' }}>{hotspot.description}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  customCallout: {
+    backgroundColor: 'transparent',
+    borderRadius: 10, // Adjust the border radius for a different shape
+    padding: 10,
+    borderWidth: 1, // Add a border if desired
+    borderColor: 'gray', // Border color
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    elevation: 5,
+  },
+});
