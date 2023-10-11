@@ -7,6 +7,8 @@ import { Image } from 'react-native';
 
 
 export default function Map (){
+  const [hotspots, setHotspots] = useState([]);
+
   const [marker, setMarker] = useState(null);
   const map = useRef(null);
   const [markerCoord, _] = useState(new AnimatedRegion({
@@ -57,11 +59,29 @@ export default function Map (){
       }
     )
   }
-  useEffect( () => {
+  useEffect(() => {
     getPermission()
     getLocation()
     interval = setInterval(getLocation, 1000);
     return () => clearInterval(interval)
+  })
+
+  useEffect(() => {
+    // Fetch the hotspot data
+    fetch("http://49.13.85.200:8080/hotspots")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((responseJson) => {
+      setHotspots(responseJson);
+    })
+    .catch((error) => {
+      console.error(error);
+      // Handle the error (e.g., show an error message)
+    });
   })
   
   return (
@@ -87,6 +107,18 @@ export default function Map (){
           }}/>
         </Marker.Animated>
       ): null}
+      {hotspots.map((hotspot) => (
+        <Marker
+          key={hotspot.hotspot_id}
+          coordinate={{
+            latitude: hotspot.latitude,
+            longitude: hotspot.longitude,
+          }}
+          title={hotspot.title}
+          description={hotspot.description}
+          
+        />
+      ))}
     </MapView>
   )  
 }
