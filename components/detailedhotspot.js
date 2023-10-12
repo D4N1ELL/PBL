@@ -1,15 +1,25 @@
-import { StyleSheet, View } from 'react-native';
-
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import React from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
+//import BottomSheet from  
 
 export default function DetailedHotspot() {
-  return(
 
-      <GestureHandlerRootView style={{flex: 1}}>
-        <View >
-        </View>
-      </GestureHandlerRootView>
 
+  return (
+    <>
+    
+    </>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  DetailedHotspotContainer: {
+    width: '100%',
+    backgroundColor: 'white',
+    alignItems: 'center',
+    position: 'absolute',
+    borderRadius: 25,
+
+  },
+
+});
