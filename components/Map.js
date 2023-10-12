@@ -102,7 +102,7 @@ export default function Map (){
     <MapView style={{ ...StyleSheet.absoluteFillObject }} 
       provider={PROVIDER_GOOGLE}
       ref={map}
-
+      toolbarEnabled={false}
       initialRegion={{
         latitude: 47.04, 
         longitude: 28.86,
