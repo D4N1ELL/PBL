@@ -1,13 +1,31 @@
+import 'react-native-gesture-handler'
+import React, { useEffect, useState, useRef } from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE, AnimatedRegion } from 'react-native-maps';
-import { StyleSheet } from 'react-native';
 import * as Location from "expo-location"
-import { useEffect, useState, useRef } from 'react';
 import { Image } from 'react-native';
 
+import {View, StyleSheet } from 'react-native';
 
-
-export default function Map (){
+export default function Map(props) {
   const [hotspots, setHotspots] = useState([]);
+
+  useEffect(() => {
+    // Fetch the hotspot data
+    fetch("http://49.13.85.200:8080/hotspots")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((responseJson) => {
+        setHotspots(responseJson);
+      })
+      .catch((error) => {
+        console.error(error);
+        // Handle the error (e.g., show an error message)
+      });
+  }, []);
 
   const [marker, setMarker] = useState(null);
   const map = useRef(null);
@@ -80,27 +98,12 @@ export default function Map (){
     return () => clearInterval(interval)
   }, [hasPermission, hasLocation])
 
-  useEffect(() => {
-    // Fetch the hotspot data
-    fetch("http://49.13.85.200:8080/hotspots")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((responseJson) => {
-      setHotspots(responseJson);
-    })
-    .catch((error) => {
-      console.error(error);
-      // Handle the error (e.g., show an error message)
-    });
-  }, [])
-  
   return (
-    <MapView style={{ ...StyleSheet.absoluteFillObject }} 
-      provider={PROVIDER_GOOGLE}
+    <View style={styles.container}>
+      <MapView
+      provider={PROVIDER_GOOGLE} 
+      style={styles.map}
+      onLongPress={props.longPressHandler}
       ref={map}
       toolbarEnabled={false}
       initialRegion={{
@@ -121,6 +124,7 @@ export default function Map (){
           }}/>
         </Marker.Animated>
       ): null}
+      {/* Map over the hotspots array and create a marker for each hotspot */}
       {hotspots.map((hotspot) => (
         <Marker
           key={hotspot.hotspot_id}
@@ -132,7 +136,20 @@ export default function Map (){
           description={hotspot.description}
           
         />
-      ))}
-    </MapView>
-  )  
+        ))}
+      </MapView>
+    </View>  
+      
+  );
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
+  map: {
+    flex: 1,
+  },
+});
