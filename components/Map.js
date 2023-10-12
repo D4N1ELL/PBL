@@ -15,7 +15,8 @@ export default function Map (){
     latitude: null,
     longitude: null,
   }));
-  const [hasLocation, setHasLocation] = useState(false)
+  const [hasPermission, setHasPermission] = useState(false)
+  const [hasLocation, setHasLocation] = useState(true)
   // setHasLocation(false)
 
 
@@ -25,17 +26,22 @@ export default function Map (){
       ({ status } = await Location.requestForegroundPermissionsAsync())
     } catch (err){
       console.log(err);
-      setHasLocation(false)
+      setHasPermission(false)
+      return false;
     }  
     
     if (status !== "granted") {
       console.log("Permission to access location was denied");
-      setHasLocation(false)
-      return;
+      setHasPermission(false)
+      return false;
     }
+    return true
   }
 
   const getLocation = async () => {
+    if(!hasLocation) {
+      return
+    }
     navigator.geolocation.getCurrentPosition(
       position => {
         const newCoordinate = {
@@ -44,27 +50,35 @@ export default function Map (){
           duration: 500
         };
 
-        if (!hasLocation) {
+        if (!hasPermission) {
           newCoordinate.latitudeDelta= 0.05
           newCoordinate.longitudeDelta= 0.05
           map.current.animateToRegion(newCoordinate, 1000)
+          setTimeout(()=>setHasPermission(true), 500)
+
         }
 
         markerCoord.timing(newCoordinate).start();
-        setTimeout(()=>setHasLocation(true), 500)
       },
-      error => console.log(error),
+      error => {
+        if (error.code == 'E_LOCATION_SETTINGS_UNSATISFIED') {
+          setHasLocation(false)
+        }
+      },  
       {
-        enableHighAccuracy: true
+        // enableHighAccuracy: true,
       }
     )
   }
   useEffect(() => {
-    getPermission()
+    permission = getPermission()
+    if (!permission) {
+      return
+    }
     getLocation()
     interval = setInterval(getLocation, 1000);
     return () => clearInterval(interval)
-  })
+  }, [hasPermission, hasLocation])
 
   useEffect(() => {
     // Fetch the hotspot data
@@ -82,7 +96,7 @@ export default function Map (){
       console.error(error);
       // Handle the error (e.g., show an error message)
     });
-  })
+  }, [])
   
   return (
     <MapView style={{ ...StyleSheet.absoluteFillObject }} 
@@ -95,7 +109,7 @@ export default function Map (){
         latitudeDelta: 0.4,
         longitudeDelta: 0.4
       }}>
-      {hasLocation? (
+      {(hasPermission && hasLocation)? (
         <Marker.Animated
           ref={m => {setMarker(m);}}
           coordinate={markerCoord}>
