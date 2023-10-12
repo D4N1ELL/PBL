@@ -1,26 +1,28 @@
 import Map from './components/Map';
-//import CreatePin from './components/CreatePin'
-import { StyleSheet, SafeAreaView } from 'react-native';
+import CreatePin from './components/CreatePin';
+import { StyleSheet, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { useState } from 'react';
+import { installWebGeolocationPolyfill } from 'expo-location';
 
-//import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import DetailedHotspot from './components/DetailedHotspot';
 
 export default function App() {
-  const longPressHandler = (event) => {
-    console.log(event)
-    
-    alert(`${event.nativeEvent.coordinate.latitude}, ${event.nativeEvent.coordinate.longitude}`);
+  installWebGeolocationPolyfill()
+
+  const [createPinOpen, setCreatePinOpen] = useState(false)
+  const [createPinCoords, setCreatePinCoords] = useState(false)
+
+  const mapPressHandler = (event) => {
+      console.log('Long pressed on map')
+      setCreatePinOpen(true)
+      setCreatePinCoords(event.nativeEvent.coordinate)
   }
 
   return(
-    <SafeAreaView style={{ ...StyleSheet.absoluteFillObject }}>
-
-      <Map lph={longPressHandler}/>
-      {/* <DetailedHotspot/> */}
-      {/* <CreatePin/> */}
-    </SafeAreaView>
-    
-    
+    <GestureHandlerRootView style={{ ...StyleSheet.absoluteFillObject }}>
+      <Map longPressHandler={mapPressHandler}/>
+      <CreatePin isOpen={createPinOpen} setIsOpen={setCreatePinOpen} coords={createPinCoords}/>
+    </GestureHandlerRootView>
+        
   );
 }
