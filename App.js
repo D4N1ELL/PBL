@@ -1,31 +1,23 @@
 import Map from './components/Map';
-//import CreatePin from './components/CreatePin'
-import { StyleSheet } from 'react-native';
+import CreatePin from './components/CreatePin';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native';
-
-<Modal
-  animated
-  animationType="fade"
-  visible={this.props.visible}
-  transparent
-  onRequestClose={() => this._handleDismiss()}>
-  <View style={styles.overlay}>
-    ...
-  </View>
-</Modal>
+import { useState } from 'react';
 
 export default function App() {
-  const longPressHandler = (event) => {
-    console.log(event)
-    
-    alert(`${event.nativeEvent.coordinate.latitude}, ${event.nativeEvent.coordinate.longitude}`);
+  const [createPinOpen, setCreatePinOpen] = useState(false)
+  const [createPinCoords, setCreatePinCoords] = useState(false)
+
+  const mapPressHandler = (event) => {
+      console.log('Long pressed on map')
+      setCreatePinOpen(true)
+      setCreatePinCoords(event.nativeEvent.coordinate)
   }
   return(
     <SafeAreaView style={{ ...StyleSheet.absoluteFillObject }}>
-      <Map lph={longPressHandler}/>
-      {/* <CreatePin/> */}
+      <Map longPressHandler={mapPressHandler}/>
+      <CreatePin isOpen={createPinOpen} setIsOpen={setCreatePinOpen} coords={createPinCoords}/>
     </SafeAreaView>
-    
-    
+        
   );
 }

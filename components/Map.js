@@ -1,12 +1,12 @@
-import { StyleSheet } from 'react-native';
+import 'react-native-gesture-handler'
 import React, { useEffect, useState } from 'react';
-import MapView, {LongPressEvent, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+
+import {View, StyleSheet } from 'react-native';
+
 
 export default function Map(props) {
   const [hotspots, setHotspots] = useState([]);
-
-
-
 
   useEffect(() => {
     // Fetch the hotspot data
@@ -26,11 +26,12 @@ export default function Map(props) {
       });
   }, []);
 
-    return (
-    <MapView
+  return (
+    <View style={styles.container}>
+      <MapView
       provider={PROVIDER_GOOGLE} 
-      style={{ ...StyleSheet.absoluteFillObject }}
-      onLongPress={props.lph}>
+      style={styles.map}
+      onLongPress={props.longPressHandler}>
       {/* Map over the hotspots array and create a marker for each hotspot */}
       {hotspots.map((hotspot) => (
         <Marker
@@ -43,7 +44,20 @@ export default function Map(props) {
           description={hotspot.description}
           
         />
-      ))}
-    </MapView>  
+        ))}
+      </MapView>
+    </View>  
+      
   );
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
+  map: {
+    flex: 1,
+  },
+});
