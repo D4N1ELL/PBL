@@ -55,7 +55,7 @@ const CustomMarker = ({ hotspot }) => {
   return (
     <View style={markerStyle}>
       {/* Title */}
-      <Text style={{ fontSize: 12, fontWeight: "bold" }}>{hotspot.title}</Text>
+      <Text style={titleStyle}>{hotspot.title}</Text>
       {/* Description */}
       <Text style={descriptionStyle}>{hotspot.description}</Text>
       {/* Image */}
@@ -65,23 +65,24 @@ const CustomMarker = ({ hotspot }) => {
 };
 
 const markerStyle = {
-  width: 75,
-  height: 75,
+  width: 100,
+  height: 100,
   backgroundColor: 'white',
-  padding: 5,
+  padding: 10,
   borderRadius: 5,
   shadowColor: 'black',
   shadowOffset: { width: 0, height: 2 },
   shadowOpacity: 0.2,
   shadowRadius: 2,
 };
+
 const titleStyle = {
   fontSize: 10,
   fontWeight: 'bold',
 };
 
 const descriptionStyle = {
-  fontSize: 6,
+  fontSize: 8,
 };
 
 const imageStyle = {
