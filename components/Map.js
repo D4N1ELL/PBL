@@ -41,59 +41,51 @@ export default function Map(props) {
           }}
           onPress={() => setSelectedHotspot(hotspot)}
         >
-          <Callout tooltip={true}>
-            <CustomCalloutView hotspot={hotspot} />
-          </Callout>
+          
+          {/* Custom marker component */}
+        <CustomMarker hotspot={hotspot} />
+          
         </Marker>
       ))}
     </MapView>  
   );
 }
 
-function CustomCalloutView({ hotspot }) {
+const CustomMarker = ({ hotspot }) => {
   return (
-    <View style={styles.customCallout}>
-      <Text style={styles.calloutTitle}>{hotspot.title}</Text>
-      <Text style={{ color: 'red' }}>{hotspot.description}</Text>
-      
-        <WebView
-          source={{ uri: 'http://49.13.85.200:8080/static' }}
-          style={styles.calloutImage}
-          
-        />
-      
+    <View style={markerStyle}>
+      {/* Title */}
+      <Text style={{ fontSize: 12, fontWeight: "bold" }}>{hotspot.title}</Text>
+      {/* Description */}
+      <Text style={descriptionStyle}>{hotspot.description}</Text>
+      {/* Image */}
+      <Image source={{ uri: hotspot.imageUrl }} style={imageStyle} />
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  customCallout: {
-    backgroundColor: 'white',
-    borderRadius: 20, // Adjust the border radius for a different shape
-    padding: 10,
-    borderWidth: 1, // Add a border if desired
-    borderColor: 'gray', // Border color
-    shadowColor: 'black',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    elevation: 5,
-    alignItems: 'center',
-  },
-  calloutTitle: {
-    color: 'red',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center', // Center the text horizontally
-  },
-  calloutImage: {
-    width: 200,
-    height: 200,
-    marginTop: 2,
-  },
-  imageContainer: {
-    alignItems: 'center', // Center horizontally
-    justifyContent: 'center', // Center vertically
-    
-  },
+const markerStyle = {
+  width: 75,
+  height: 75,
+  backgroundColor: 'white',
+  padding: 5,
+  borderRadius: 5,
+  shadowColor: 'black',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
+};
+const titleStyle = {
+  fontSize: 10,
+  fontWeight: 'bold',
+};
 
-});
+const descriptionStyle = {
+  fontSize: 6,
+};
+
+const imageStyle = {
+  width: 100,
+  height: 100,
+  marginTop: 5,
+};
