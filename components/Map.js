@@ -1,7 +1,9 @@
 import { StyleSheet , Text, View,Image} from 'react-native';
 import React, { useEffect, useState, memo } from 'react';
-import MapView, { Marker, PROVIDER_GOOGLE , Callout} from 'react-native-maps';
-import { WebView } from 'react-native-webview';
+import MapView, { Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import { Svg, Polygon, Rect } from 'react-native-svg';
+import SuperCluster from 'react-native-maps-super-cluster';
+
 
 export default function Map(props) {
   const [hotspots, setHotspots] = useState([]);
@@ -19,9 +21,9 @@ export default function Map(props) {
         return response.json();
       })
       .then((responseJson) => {
-        console.log("b4", hotspots.length)
+        //console.log("b4", hotspots.length)
         setHotspots(responseJson);
-        console.log("aftr", hotspots)
+        //console.log("aftr", hotspots)
       })
       .catch((error) => {
         console.error(error);
@@ -32,7 +34,7 @@ export default function Map(props) {
     }, 2000)
     return () => {clearInterval(interval)}
   }, [hotspots]);
-  console.log("redraw")
+  //console.log("redraw")
   return (
     <MapView
       provider={PROVIDER_GOOGLE} 
@@ -49,10 +51,7 @@ export default function Map(props) {
           }}
           tracksViewChanges={tvc}
         >
-          
-          {/* Custom marker component */}
         <CustomMarker hotspot={hotspot} />
-          
         </Marker>
       ))}
     </MapView>  
@@ -61,40 +60,37 @@ export default function Map(props) {
 
 const CustomMarker = memo(({ hotspot }) => {
   return (
-    <View style={markerStyle}>
-      {/* Title */}
-      <Text style={titleStyle}>{hotspot.title}</Text>
-      {/* Description */}
-      <Text style={descriptionStyle}>{hotspot.description}</Text>
-      {/* Image */}
-      <Image source={{ uri: `http://49.13.85.200:8080/static/${hotspot.hotspot_id}/${hotspot.photos?.at(0)}` }} style={imageStyle} />
+    <View >
+      <Svg height="155" width="155">
+        <Rect x="0" y="0" width="120" height="120" rx="10" ry="10" fill="white" />
+        <Polygon points="40,120 60,135 80,120" fill="white" />
+        <Image
+          marginLeft={20}
+          width={80}
+          height={80}
+          borderRadius= {10}
+          overflow= "hidden"
+          source={{ uri: `http://49.13.85.200:8080/static/${hotspot.hotspot_id}/${hotspot.photos?.at(0)}` }}
+        />
+        <Text style={titleStyle} >{hotspot.title}</Text>
+        <Text style={descriptionStyle} x="10" y="80" width={80}>{hotspot.description}</Text>
+      </Svg>
     </View>
   );
 });
 
-const markerStyle = {
-  width: 100,
-  height: 100,
-  backgroundColor: 'white',
-  padding: 10,
-  borderRadius: 5,
-  // shadowColor: 'black',
-  // shadowOffset: { width: 0, height: 2 },
-  // shadowOpacity: 0.2,
-  // shadowRadius: 2,
-};
 
 const titleStyle = {
-  fontSize: 10,
-  fontWeight: 'bold',
+  fontSize: 8,
+  fontWeight: 600,
+  letterSpacing: 0,
+  textAlign: 'left',
+ top: 10, left: 10,
+ color: 'rgba(109, 27, 137, 1)',
 };
 
 const descriptionStyle = {
-  fontSize: 8,
+  fontSize: 6,
+ top: 10, left: 10, right: 90,
 };
 
-const imageStyle = {
-  width: 100,
-  height: 100,
-  marginTop: 5,
-};
