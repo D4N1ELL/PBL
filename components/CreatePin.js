@@ -2,6 +2,7 @@ import BottomSheet, {BottomSheetTextInput} from '@gorhom/bottom-sheet'
 import React, { useState, useRef, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { View, Keyboard, Text, Button, StyleSheet } from 'react-native';
+import {launchImageLibrary}from 'react-native-image-picker';
 
 export default function CreatePin(props) {
 
@@ -43,6 +44,23 @@ export default function CreatePin(props) {
          console.error(error); 
      } 
  } 
+
+ handleGalleryClick = () => {
+  launchImageLibrary(options, (response) => {
+   if (response.didCancel) {
+     console.log('User cancelled image picker');
+   } else if (response.error) {
+     console.log('ImagePicker Error: ', response.error);
+   } else if (response.customButton) {
+     console.log('User tapped custom button: ', response.customButton);
+   } else {
+     const source = { uri: response.uri };
+     this.setState({
+       avatarSource: source,
+     });
+   }
+ });
+ };
   
   return (
     <BottomSheet
@@ -56,7 +74,7 @@ export default function CreatePin(props) {
     >
       <View style={styles.bottomSheetContent}>
 
-        <Text style={styles.bottomSheetTitle}>Location</Text>
+        <Text style={styles.bottomSheetTitle}>Location*</Text>
         <BottomSheetTextInput
           style={styles.input}
           placeholder="Enter Location "
@@ -70,9 +88,14 @@ export default function CreatePin(props) {
           value={description}
           onChangeText={setdescription}
         />
-        <Text style={styles.bottomSheetTitle}>Add Photo</Text>
+        <Text style={styles.bottomSheetTitle}>Add Photo*</Text>
 
-        <TouchableOpacity style={styles.panelButton} onPressIn={() => console.log('Choose from library pressed')}>
+        <TouchableOpacity 
+        style={styles.panelButton} 
+        onPressIn={() => {
+          this.handleGalleryClick
+          console.log('Choose from library pressed')
+          }}>
           <Button title="Choose from library"/>
         </TouchableOpacity>
 
@@ -80,6 +103,7 @@ export default function CreatePin(props) {
           <TouchableOpacity style={styles.cancelButton} onPressIn={() => sheetRef.current.close()}>
             <Text title="Cancel">Cancel</Text>
           </TouchableOpacity> 
+
           <TouchableOpacity 
             style={styles.createButton} 
             onPressIn={() => {
@@ -134,6 +158,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'grey',
     color: 'black',
+    borderRadius: 5 
   },
   createButton: {
     padding: 10,
@@ -142,5 +167,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'green',
     color: 'black',
+    borderRadius: 5 
   },
 });
