@@ -6,7 +6,6 @@ import { Svg, Polygon, Rect } from 'react-native-svg';
 
 export default function Map(props) {
   const [hotspots, setHotspots] = useState([]);
-  const [selectedHotspot, setSelectedHotspot] = useState(null);
   const [tvc, setTvc] = useState(false);
 
   useEffect(() => {
@@ -20,25 +19,20 @@ export default function Map(props) {
         return response.json();
       })
       .then((responseJson) => {
-        //console.log("b4", hotspots.length)
         setHotspots(responseJson);
-        //console.log("aftr", hotspots)
       })
       .catch((error) => {
         console.error(error);
-        // Handle the error (e.g., show an error message)
       });
       setTvc(true)
       setTimeout(()=>setTvc(false), 200)
     }, 2000)
     return () => {clearInterval(interval)}
   }, [hotspots]);
-  //console.log("redraw")
   return (
     <MapView
       provider={PROVIDER_GOOGLE} 
       style={{ ...StyleSheet.absoluteFillObject }}
-      onLongPress={props.lph}
     >
       {/* Map over the hotspots array and create a marker for each hotspot */}
       {hotspots.map((hotspot, index) => (
@@ -92,7 +86,6 @@ const styles = StyleSheet.create({
   
   titleStyle : {
     fontSize: 8,
-    //fontWeight: 600,
     letterSpacing: 0,
     textAlign: 'left',
     top: 10, left: 10,
