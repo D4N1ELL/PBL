@@ -70,7 +70,7 @@ export default function CreatePin(props) {
       borderRadius={10}
       enablePanDownToClose
       keyboardBlurBehavior={"restore"}
-      onClose={Keyboard.dismiss}
+      onClose={() => {Keyboard.dismiss(); props.setIsOpen(false)}}
     >
       <View style={styles.bottomSheetContent}>
 
@@ -114,6 +114,7 @@ export default function CreatePin(props) {
                 latitude: props.coords.latitude,
                 longitude: props.coords.longitude
               })
+              sheetRef.current.close()
               }
             }
           >
