@@ -1,6 +1,6 @@
 import Map from './components/Map';
 import CreatePin from './components/CreatePin';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useState } from 'react';
 import { installWebGeolocationPolyfill } from 'expo-location';
