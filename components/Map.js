@@ -1,15 +1,27 @@
 import MapView, { Marker, PROVIDER_GOOGLE, AnimatedRegion } from 'react-native-maps';
 import { StyleSheet } from 'react-native';
 import * as Location from "expo-location"
-import { useEffect, useState, useRef } from 'react';
-import { Image } from 'react-native';
+import { Image, TouchableOpacity, View, StyleSheet } from 'react-native';
 
+import {showMessage, hideMessage} from "react-native-flash-message";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 export default function Map (){
   const [hotspots, setHotspots] = useState([]);
+  useEffect(() => {
+    // Fetch the hotspot data
+    fetch("http://49.13.85.200:8080/hotspots")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(setHotspots)
+      .catch(console.error);
+  }, []);
 
-  const [marker, setMarker] = useState(null);
   const map = useRef(null);
   const [markerCoord, _] = useState(new AnimatedRegion({
     latitude: null,
@@ -17,31 +29,31 @@ export default function Map (){
   }));
   const [hasPermission, setHasPermission] = useState(false)
   const [hasLocation, setHasLocation] = useState(true)
-  // setHasLocation(false)
-
 
   const getPermission = async () => {
     let status;
     try {
       ({ status } = await Location.requestForegroundPermissionsAsync())
     } catch (err){
-      console.log(err);
       setHasPermission(false)
+      showMessage({
+        message:"No permission to use location",
+        type: "warning"})
       return false;
     }  
     
     if (status !== "granted") {
-      console.log("Permission to access location was denied");
       setHasPermission(false)
+      showMessage({
+        message:"No permission to use location",
+        type: "warning"})
       return false;
     }
     return true
   }
 
-  const getLocation = async () => {
-    if(!hasLocation) {
-      return
-    }
+  const getLocation = async (move) => {
+    if(!hasLocation) { return }
     navigator.geolocation.getCurrentPosition(
       position => {
         const newCoordinate = {
@@ -50,32 +62,38 @@ export default function Map (){
           duration: 500
         };
 
-        if (!hasPermission) {
+        if (move) {
           newCoordinate.latitudeDelta= 0.05
           newCoordinate.longitudeDelta= 0.05
           map.current.animateToRegion(newCoordinate, 1000)
           setTimeout(()=>setHasPermission(true), 500)
-
         }
 
         markerCoord.timing(newCoordinate).start();
+        hideMessage()
       },
       error => {
         if (error.code == 'E_LOCATION_SETTINGS_UNSATISFIED') {
+          showMessage({
+            message:"Location turned off",
+            type: "warning"})
           setHasLocation(false)
         }
-      },  
-      {
-        // enableHighAccuracy: true,
-      }
+      },
     )
   }
-  useEffect(() => {
+
+  const locate = () => {
+    setHasLocation(true)
     permission = getPermission()
-    if (!permission) {
-      return
-    }
-    getLocation()
+    if (!permission) { return }
+    getLocation(true)
+  }
+
+  useEffect(() => {
+    checkPermission = getPermission()
+    if (!checkPermission) { return }
+    getLocation(!hasPermission)
     interval = setInterval(getLocation, 1000);
     return () => clearInterval(interval)
   }, [hasPermission, hasLocation])
@@ -99,6 +117,7 @@ export default function Map (){
   }, [])
   
   return (
+    <View>
     <MapView style={{ ...StyleSheet.absoluteFillObject }} 
       provider={PROVIDER_GOOGLE}
       ref={map}
@@ -111,7 +130,6 @@ export default function Map (){
       }}>
       {(hasPermission && hasLocation)? (
         <Marker.Animated
-          ref={m => {setMarker(m);}}
           coordinate={markerCoord}>
           <Image
             source={require('../assets/location.png')}
@@ -130,9 +148,38 @@ export default function Map (){
           }}
           title={hotspot.title}
           description={hotspot.description}
-          
         />
-      ))}
-    </MapView>
-  )  
+        ))}
+      </MapView>
+      <TouchableOpacity onPress={locate} style={styles.locateButton}>
+        {hasLocation && hasPermission? 
+          <Icon name="crosshairs-gps" size={30} color="#000"/>:
+          <Icon name="crosshairs" size={30} color="#B22"/>
+        }
+      </TouchableOpacity>
+    </View>  
+      
+  );
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
+  map: {
+    flex: 1,
+  },
+  locateButton: {
+    width: 60, 
+    height: 60,
+    position: "absolute", 
+    bottom: 40, 
+    right: 20, 
+    borderRadius: 30, 
+    backgroundColor: "#FFF",
+    justifyContent: "center",
+    alignItems: "center"
+  }
+});

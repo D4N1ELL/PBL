@@ -3,6 +3,7 @@ import Map from './components/Map';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native';
 import { installWebGeolocationPolyfill } from 'expo-location';
+import FlashMessage from "react-native-flash-message";
 
 
 
@@ -15,11 +16,11 @@ export default function App() {
     alert(`${event.nativeEvent.coordinate.latitude}, ${event.nativeEvent.coordinate.longitude}`);
   }
   return(
-    <SafeAreaView style={{ ...StyleSheet.absoluteFillObject }}>
-      <Map lph={longPressHandler}/>
-      {/* <CreatePin/> */}
-    </SafeAreaView>
-    
-    
+    <GestureHandlerRootView style={{ ...StyleSheet.absoluteFillObject }}>
+      <Map longPressHandler={mapPressHandler}/>
+      <CreatePin isOpen={createPinOpen} setIsOpen={setCreatePinOpen} coords={createPinCoords}/>
+      <FlashMessage position="bottom"/>
+    </GestureHandlerRootView>
+        
   );
 }
