@@ -1,9 +1,10 @@
 import Map from './components/Map';
 import CreatePin from './components/CreatePin';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useState } from 'react';
 import { installWebGeolocationPolyfill } from 'expo-location';
+import FlashMessage from "react-native-flash-message";
 
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
     <GestureHandlerRootView style={{ ...StyleSheet.absoluteFillObject }}>
       <Map longPressHandler={mapPressHandler}/>
       <CreatePin isOpen={createPinOpen} setIsOpen={setCreatePinOpen} coords={createPinCoords}/>
+      <FlashMessage position="bottom"/>
     </GestureHandlerRootView>
         
   );

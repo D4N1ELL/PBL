@@ -1,13 +1,15 @@
 import 'react-native-gesture-handler'
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, memo } from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE, AnimatedRegion } from 'react-native-maps';
 import * as Location from "expo-location"
-import { Image } from 'react-native';
-
-import {View, StyleSheet } from 'react-native';
+import { Image, TouchableOpacity, View, StyleSheet, Text} from 'react-native';
+import { Svg, Polygon, Rect } from 'react-native-svg';
+import {showMessage, hideMessage} from "react-native-flash-message";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Map(props) {
   const [hotspots, setHotspots] = useState([]);
+  const [tvc, setTvc] = useState(false);
 
   useEffect(() => {
     // Fetch the hotspot data
@@ -18,14 +20,27 @@ export default function Map(props) {
         }
         return response.json();
       })
-      .then((responseJson) => {
-        setHotspots(responseJson);
-      })
-      .catch((error) => {
-        console.error(error);
-        // Handle the error (e.g., show an error message)
-      });
+      .then(setHotspots)
+      .catch(console.error);
   }, []);
+
+  useEffect(() => {
+    // Fetch the hotspot data
+    interval = setInterval (() => {
+      fetch("http://49.13.85.200:8080/hotspots")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(setHotspots)
+        .catch(console.error);
+      // setTvc(true)
+      setTimeout(()=>setTvc(false), 10)
+    }, 10000)
+    return () => {clearInterval(interval)}
+  }, [hotspots]);
 
   const [marker, setMarker] = useState(null);
   const map = useRef(null);
@@ -35,31 +50,31 @@ export default function Map(props) {
   }));
   const [hasPermission, setHasPermission] = useState(false)
   const [hasLocation, setHasLocation] = useState(true)
-  // setHasLocation(false)
-
 
   const getPermission = async () => {
     let status;
     try {
       ({ status } = await Location.requestForegroundPermissionsAsync())
     } catch (err){
-      console.log(err);
       setHasPermission(false)
+      showMessage({
+        message:"No permission to use location",
+        type: "warning"})
       return false;
     }  
     
     if (status !== "granted") {
-      console.log("Permission to access location was denied");
       setHasPermission(false)
+      showMessage({
+        message:"No permission to use location",
+        type: "warning"})
       return false;
     }
     return true
   }
 
-  const getLocation = async () => {
-    if(!hasLocation) {
-      return
-    }
+  const getLocation = async (move) => {
+    if(!hasLocation) { return }
     navigator.geolocation.getCurrentPosition(
       position => {
         const newCoordinate = {
@@ -68,35 +83,64 @@ export default function Map(props) {
           duration: 500
         };
 
-        if (!hasPermission) {
+        if (move) {
           newCoordinate.latitudeDelta= 0.05
           newCoordinate.longitudeDelta= 0.05
           map.current.animateToRegion(newCoordinate, 1000)
           setTimeout(()=>setHasPermission(true), 500)
-
         }
 
         markerCoord.timing(newCoordinate).start();
+        hideMessage()
       },
       error => {
         if (error.code == 'E_LOCATION_SETTINGS_UNSATISFIED') {
+          showMessage({
+            message:"Location turned off",
+            type: "warning"})
           setHasLocation(false)
         }
-      },  
-      {
-        // enableHighAccuracy: true,
-      }
+      },
     )
   }
-  useEffect(() => {
+
+  const locate = () => {
+    setHasLocation(true)
     permission = getPermission()
-    if (!permission) {
-      return
-    }
-    getLocation()
+    if (!permission) { return }
+    getLocation(true)
+  }
+
+  useEffect(() => {
+    checkPermission = getPermission()
+    if (!checkPermission) { return }
+    getLocation(!hasPermission)
     interval = setInterval(getLocation, 1000);
     return () => clearInterval(interval)
   }, [hasPermission, hasLocation])
+
+
+const CustomMarker = memo(({ hotspot }) => {
+  return (
+    <View >
+      <Svg height="155" width="155">
+        <Rect x="0" y="0" width="120" height="120" rx="10" ry="10" fill="white" />
+        <Polygon points="40,120 60,135 80,120" fill="white" />
+        <Image
+          marginLeft={10}
+          marginTop={10}
+          width={100}
+          height={60}
+          borderRadius= {15}
+          overflow= "hidden"
+          source={{ uri: `http://49.13.85.200:8080/static/${hotspot.hotspot_id}/${hotspot.photos?.at(0)}` }}
+        />
+        <Text style={styles.titleStyle} >{hotspot.title}</Text>
+        <Text style={styles.descriptionStyle} x="10" y="80" width={80}>{hotspot.description}</Text>
+      </Svg>
+    </View>
+  );
+});
 
   return (
     <View style={styles.container}>
@@ -114,7 +158,6 @@ export default function Map(props) {
       }}>
       {(hasPermission && hasLocation)? (
         <Marker.Animated
-          ref={m => {setMarker(m);}}
           coordinate={markerCoord}>
           <Image
             source={require('../assets/location.png')}
@@ -125,19 +168,25 @@ export default function Map(props) {
         </Marker.Animated>
       ): null}
       {/* Map over the hotspots array and create a marker for each hotspot */}
-      {hotspots.map((hotspot) => (
+      {hotspots.map((hotspot, index) => (
         <Marker
-          key={hotspot.hotspot_id}
+          key={index}
           coordinate={{
             latitude: hotspot.latitude,
             longitude: hotspot.longitude,
           }}
-          title={hotspot.title}
-          description={hotspot.description}
-          
-        />
+          tracksViewChanges={tvc}
+          >
+          <CustomMarker hotspot={hotspot} />
+        </Marker>
         ))}
       </MapView>
+      <TouchableOpacity onPress={locate} style={styles.locateButton}>
+        {hasLocation && hasPermission? 
+          <Icon name="crosshairs-gps" size={30} color="#000"/>:
+          <Icon name="crosshairs" size={30} color="#B22"/>
+        }
+      </TouchableOpacity>
     </View>  
       
   );
@@ -151,5 +200,28 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  locateButton: {
+    width: 60, 
+    height: 60,
+    position: "absolute", 
+    bottom: 40, 
+    right: 20, 
+    borderRadius: 30, 
+    backgroundColor: "#FFF",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  titleStyle : {
+    fontSize: 8,
+    letterSpacing: 0,
+    textAlign: 'left',
+    top: 10, left: 10,
+    color: 'rgba(109, 27, 137, 1)',
+  },
+
+  descriptionStyle : {
+    fontSize: 6,
+  top: 10, left: 10, right: 90,
   },
 });
