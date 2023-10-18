@@ -2,11 +2,12 @@ import BottomSheet, {BottomSheetTextInput} from '@gorhom/bottom-sheet'
 import React, { useState, useRef, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { View, Keyboard, Text, Button, StyleSheet } from 'react-native';
+import {launchImageLibrary}from 'react-native-image-picker';
 
 export default function CreatePin(props) {
 
-  const [text1, setText1] = useState('');
-  const [text2, setText2] = useState('');
+  const [location, setlocation] = useState('');
+  const [description, setdescription] = useState('');
   const sheetRef = useRef(null);
 
   useEffect(()=>{
@@ -17,6 +18,49 @@ export default function CreatePin(props) {
       sheetRef.current.close()
     }
   }, [props.isOpen, sheetRef])
+
+  const requestOptions = { 
+    method: 'POST', 
+    headers: { 'Content-Type': 'application/json' }, 
+
+  }; 
+
+  const postExample = async (body) => { 
+     try { 
+         req = {
+          ...requestOptions,
+          body: JSON.stringify(body) 
+         }
+         console.log(JSON.stringify(req))
+         await fetch("http://49.13.85.200:8080/hotspots", req) 
+             .then(response => { 
+                console.log(response)
+                response.text().then((text)=>{
+                  console.log(text)
+                })
+             }) 
+     } 
+     catch (error) { 
+         console.error(error); 
+     } 
+ } 
+
+ handleGalleryClick = () => {
+  launchImageLibrary(options, (response) => {
+   if (response.didCancel) {
+     console.log('User cancelled image picker');
+   } else if (response.error) {
+     console.log('ImagePicker Error: ', response.error);
+   } else if (response.customButton) {
+     console.log('User tapped custom button: ', response.customButton);
+   } else {
+     const source = { uri: response.uri };
+     this.setState({
+       avatarSource: source,
+     });
+   }
+ });
+ };
   
   return (
     <BottomSheet
@@ -28,39 +72,55 @@ export default function CreatePin(props) {
       keyboardBlurBehavior={"restore"}
       onClose={Keyboard.dismiss}
     >
-       <View style={styles.bottomSheetContent}>
+      <View style={styles.bottomSheetContent}>
 
-<Text style={styles.bottomSheetTitle}>Location</Text>
-<BottomSheetTextInput
-style={styles.input}
-placeholder="Enter Location "
-value={text1}
-onChangeText={setText1}
-/>
-<Text style={styles.bottomSheetTitle}>Description</Text> 
-<BottomSheetTextInput
-style={styles.input}
-placeholder="Enter some Description"
-value={text2}
-onChangeText={setText2}
-/>
-<Text style={styles.bottomSheetTitle}>Add Photo</Text>
+        <Text style={styles.bottomSheetTitle}>Location*</Text>
+        <BottomSheetTextInput
+          style={styles.input}
+          placeholder="Enter Location "
+          value={location}
+          onChangeText={setlocation}
+        />
+        <Text style={styles.bottomSheetTitle}>Description</Text> 
+        <BottomSheetTextInput
+          style={styles.input}
+          placeholder="Enter some Description"
+          value={description}
+          onChangeText={setdescription}
+        />
+        <Text style={styles.bottomSheetTitle}>Add Photo*</Text>
 
+        <TouchableOpacity 
+        style={styles.panelButton} 
+        onPressIn={() => {
+          this.handleGalleryClick
+          console.log('Choose from library pressed')
+          }}>
+          <Button title="Choose from library"/>
+        </TouchableOpacity>
 
+        <View style={{flexDirection: 'row', justifyContent:'space-around'}}>
+          <TouchableOpacity style={styles.cancelButton} onPressIn={() => sheetRef.current.close()}>
+            <Text title="Cancel">Cancel</Text>
+          </TouchableOpacity> 
 
-<TouchableOpacity style={styles.panelButton} onPressIn={() => console.log('Choose from library pressed')}>
-<Button title="Choose from library"/>
-</TouchableOpacity>
-
-<View style={{flexDirection: 'row', justifyContent:'space-around'}}>
-<TouchableOpacity style={styles.cancelButton} onPressIn={() => sheetRef.current.close()}>
-<Text title="Cancel">Cancel</Text>
-</TouchableOpacity> 
-<TouchableOpacity style={styles.createButton} onPressIn={() => console.log(`1: ${text1}, 2: ${text2}, coords: ${props.coords.latitude}; ${props.coords.longitude}`)}>
-<Text title="Create">Create</Text>
-</TouchableOpacity>
-</View>
-</View>
+          <TouchableOpacity 
+            style={styles.createButton} 
+            onPressIn={() => {
+              console.log(`1: ${location}, 2: ${description}, coords: ${props.coords.latitude}; ${props.coords.longitude}`)
+              postExample({
+                title: location,
+                description: description,
+                latitude: props.coords.latitude,
+                longitude: props.coords.longitude
+              })
+              }
+            }
+          >
+            <Text title="Create">Create</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </BottomSheet>
   )
 }
@@ -98,6 +158,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'grey',
     color: 'black',
+    borderRadius: 5 
   },
   createButton: {
     padding: 10,
@@ -106,5 +167,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'green',
     color: 'black',
+    borderRadius: 5 
   },
 });
