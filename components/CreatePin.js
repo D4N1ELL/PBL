@@ -1,14 +1,17 @@
 import BottomSheet, {BottomSheetTextInput} from '@gorhom/bottom-sheet'
 import React, { useState, useRef, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { View, Keyboard, Text, Button, StyleSheet } from 'react-native';
-import {launchImageLibrary}from 'react-native-image-picker';
+import { View, Keyboard, Text, Button, StyleSheet, Image, Platform } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function CreatePin(props) {
 
   const [location, setlocation] = useState('');
   const [description, setdescription] = useState('');
   const sheetRef = useRef(null);
+
+  const [image, setImage] = useState(null); // Stores the selected image URI   
+  const [error, setError] = useState(null); // Stores any error message 
 
   useEffect(()=>{
     console.log(props.isOpen)
@@ -45,23 +48,41 @@ export default function CreatePin(props) {
      } 
  } 
 
- handleGalleryClick = () => {
-  launchImageLibrary(options, (response) => {
-   if (response.didCancel) {
-     console.log('User cancelled image picker');
-   } else if (response.error) {
-     console.log('ImagePicker Error: ', response.error);
-   } else if (response.customButton) {
-     console.log('User tapped custom button: ', response.customButton);
-   } else {
-     const source = { uri: response.uri };
-     this.setState({
-       avatarSource: source,
-     });
-   }
- });
- };
-  
+  // Function to pick an image from the device's media library 
+    const pickImage = async () => { 
+      const { status } = await ImagePicker. 
+          requestMediaLibraryPermissionsAsync(); 
+
+      if (status !== "granted") { 
+
+          // If permission is denied, show an alert 
+          Alert.alert( 
+              "Permission Denied", 
+              `Sorry, we need cameraroll permission to upload images.` 
+          ); 
+      } else { 
+
+          // Launch the image library and get the selected image 
+          let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Photo,
+            allowsMultipleSelection: true,
+            //allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+          });
+      
+          console.log(result);
+      
+          if (!result.canceled) { 
+            // If an image is selected (not cancelled) update the file state variable 
+            setImage(result.assets[0].uri);
+              
+            // Clear any previous errors 
+            setError(null); 
+          } 
+      } 
+  }; 
+
   return (
     <BottomSheet
       ref={sheetRef}
@@ -91,12 +112,13 @@ export default function CreatePin(props) {
         <Text style={styles.bottomSheetTitle}>Add Photo*</Text>
 
         <TouchableOpacity 
-        style={styles.panelButton} 
-        onPressIn={() => {
-          this.handleGalleryClick
-          console.log('Choose from library pressed')
-          }}>
-          <Button title="Choose from library"/>
+          style={styles.panelButton} 
+          onPressIn={() => {
+            pickImage()
+            console.log('Choose from library pressed')
+            }}>
+            <Button title="Choose from library"/>
+            {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
         </TouchableOpacity>
 
         <View style={{flexDirection: 'row', justifyContent:'space-around'}}>
@@ -136,6 +158,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
+  imageContainer: { 
+    borderRadius: 8, 
+    marginBottom: 16, 
+    shadowColor: "#000000", 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.4, 
+    shadowRadius: 4, 
+    elevation: 5, 
+  }, 
   input: {
     borderColor: 'gray',
     borderWidth: 1,

@@ -23,7 +23,8 @@
     "react-native-reanimated": "~3.3.0",
     "reanimated-bottom-sheet": "^1.0.0-alpha.22",
     "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "expo-image-picker": "~14.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",

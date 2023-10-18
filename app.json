@@ -1,5 +1,8 @@
 {
   "expo": {
+    "plugins": [
+      "expo-image-picker"
+    ],
     "name": "pefe",
     "slug": "pefe",
     "version": "1.0.0",
@@ -15,7 +18,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryAddUsageDescription": "Give Expo experiences permission to save photos"
+      },
+      
     },
     "android": {
       "adaptiveIcon": {
