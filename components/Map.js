@@ -65,32 +65,42 @@ const CustomMarker = memo(({ hotspot }) => {
         <Rect x="0" y="0" width="120" height="120" rx="10" ry="10" fill="white" />
         <Polygon points="40,120 60,135 80,120" fill="white" />
         <Image
-          marginLeft={20}
-          width={80}
-          height={80}
-          borderRadius= {10}
+          marginLeft={10}
+          width={100}
+          height={60}
+          borderRadius= {15}
           overflow= "hidden"
           source={{ uri: `http://49.13.85.200:8080/static/${hotspot.hotspot_id}/${hotspot.photos?.at(0)}` }}
         />
-        <Text style={titleStyle} >{hotspot.title}</Text>
-        <Text style={descriptionStyle} x="10" y="80" width={80}>{hotspot.description}</Text>
+        <Text style={styles.titleStyle} >{hotspot.title}</Text>
+        <Text style={styles.descriptionStyle} x="10" y="80" width={80}>{hotspot.description}</Text>
       </Svg>
     </View>
   );
 });
 
 
-const titleStyle = {
-  fontSize: 8,
-  fontWeight: 600,
-  letterSpacing: 0,
-  textAlign: 'left',
- top: 10, left: 10,
- color: 'rgba(109, 27, 137, 1)',
-};
 
-const descriptionStyle = {
-  fontSize: 6,
- top: 10, left: 10, right: 90,
-};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
+  map: {
+    flex: 1,
+  },
+  
+  titleStyle : {
+    fontSize: 8,
+    //fontWeight: 600,
+    letterSpacing: 0,
+    textAlign: 'left',
+    top: 10, left: 10,
+    color: 'rgba(109, 27, 137, 1)',
+  },
 
+  descriptionStyle : {
+    fontSize: 6,
+  top: 10, left: 10, right: 90,
+  },
+});
