@@ -2,7 +2,6 @@ import { StyleSheet , Text, View,Image} from 'react-native';
 import React, { useEffect, useState, memo } from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { Svg, Polygon, Rect } from 'react-native-svg';
-import SuperCluster from 'react-native-maps-super-cluster';
 
 
 export default function Map(props) {
@@ -66,6 +65,7 @@ const CustomMarker = memo(({ hotspot }) => {
         <Polygon points="40,120 60,135 80,120" fill="white" />
         <Image
           marginLeft={10}
+          marginTop={10}
           width={100}
           height={60}
           borderRadius= {15}
