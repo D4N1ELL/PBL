@@ -1,18 +1,18 @@
 import Map from './components/Map';
 import CreatePin from './components/CreatePin';
-import { StyleSheet } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { useState } from 'react';
-import { installWebGeolocationPolyfill } from 'expo-location';
-import FlashMessage, {showMessage, hideMessage} from "react-native-flash-message";
+import {StyleSheet} from 'react-native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler'
+import {useState} from 'react';
+import {installWebGeolocationPolyfill} from 'expo-location';
+import FlashMessage, {showMessage} from "react-native-flash-message";
 
 
 export default function App() {
-  installWebGeolocationPolyfill()
+    installWebGeolocationPolyfill()
 
-  const [createPinOpen, setCreatePinOpen] = useState(false);
-  const [createPinCoords, setCreatePinCoords] = useState(false);
-  const [hotspots, setHotspots] = useState([]);
+    const [createPinOpen, setCreatePinOpen] = useState(false);
+    const [createPinCoords, setCreatePinCoords] = useState(false);
+    const [hotspots, setHotspots] = useState([]);
 
     const checkDistance = (lat1, lon1, lat2, lon2) => {
         //Haversine formula
@@ -24,35 +24,32 @@ export default function App() {
             Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = earthRadius * c;
-
-        return distance;
+        return earthRadius * c;
     };
-  const mapPressHandler = (event) => {
-      console.log('Long pressed on map')
-      coords = event.nativeEvent.coordinate
-      ok = hotspots.every(hotspot => {
-          console.log(checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude))
-          return checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude) > 100;
-      })
-      if (ok) {
-        setCreatePinOpen(true)
-        setCreatePinCoords()
-      } else {
-          showMessage({
-              message:"Too close to existing hotspot",
-              type: "warning"
-          })
-          // setTimeout(hideMessage, 4000)
-      }
-  }
+    const mapPressHandler = (event) => {
+        console.log('Long pressed on map')
+        let coords = event.nativeEvent.coordinate
+        let ok = hotspots.every(hotspot => {
+            console.log(checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude))
+            return checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude) > 100;
+        })
+        if (ok) {
+            setCreatePinOpen(true)
+            setCreatePinCoords(coords)
+        } else {
+            showMessage({
+                message: "Too close to existing hotspot",
+                type: "warning"
+            })
+        }
+    }
 
-  return(
-    <GestureHandlerRootView style={{ ...StyleSheet.absoluteFillObject }}>
-      <Map longPressHandler={mapPressHandler} hotspots={hotspots} setHotspots={setHotspots}/>
-      <CreatePin isOpen={createPinOpen} setIsOpen={setCreatePinOpen} coords={createPinCoords}/>
-      <FlashMessage position="bottom"/>
-    </GestureHandlerRootView>
-        
-  );
+    return (
+        <GestureHandlerRootView style={{...StyleSheet.absoluteFillObject}}>
+            <Map longPressHandler={mapPressHandler} hotspots={hotspots} setHotspots={setHotspots}/>
+            <CreatePin isOpen={createPinOpen} setIsOpen={setCreatePinOpen} coords={createPinCoords}/>
+            <FlashMessage position="bottom"/>
+        </GestureHandlerRootView>
+
+    );
 }

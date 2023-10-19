@@ -26,8 +26,8 @@
     "web": {
       "favicon": "./assets/favicon.png"
     }
-  }
-  ,"android": {
+  },
+  "android": {
     "package": "com.yourcompany.yourappname",
     "versionCode": 1
   }
