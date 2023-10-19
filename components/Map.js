@@ -186,7 +186,7 @@ export default function Map(props) {
                         }}
                         tracksViewChanges={tvc}
                         zIndex={1000} // Set a higher zIndex for unclustered markers
-
+                        onPress={props.onMarkerPress(hotspot)}
                     >
                         <CustomMarker hotspot={hotspot}/>
                     </Marker>
