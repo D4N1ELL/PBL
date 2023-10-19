@@ -6,6 +6,7 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Polygon, Rect, Svg} from 'react-native-svg';
 import {showMessage} from "react-native-flash-message";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import ClusteredMapView from 'react-native-map-clustering'; // Import ClusteredMapView
 
 export default function Map(props) {
     const [tvc, setTvc] = useState(false);
@@ -153,7 +154,7 @@ export default function Map(props) {
 
     return (
         <View style={styles.container}>
-            <MapView
+            <ClusteredMapView
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
                 onLongPress={props.longPressHandler}
@@ -185,11 +186,13 @@ export default function Map(props) {
                             longitude: hotspot.longitude,
                         }}
                         tracksViewChanges={tvc}
+                        zIndex={1000} // Set a higher zIndex for unclustered markers
+
                     >
                         <CustomMarker hotspot={hotspot}/>
                     </Marker>
                 ))}
-            </MapView>
+            </ClusteredMapView>
             <TouchableOpacity onPress={locate} style={styles.locateButton}>
                 {hasLocation && hasPermission ?
                     <Icon name="crosshairs-gps" size={30} color="#000"/> :
