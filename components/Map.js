@@ -133,20 +133,19 @@ export default function Map(props) {
     const CustomMarker = memo(({hotspot}) => {
         return (
             <View>
-                <Svg height="155" width="155">
-                    <Rect x="0" y="0" width="120" height="120" rx="10" ry="10" fill="white"/>
-                    <Polygon points="40,120 60,135 80,120" fill="white"/>
+                <Svg height="100" width="100">
+                    <Rect x="0" y="0" width="100" height="80" rx="10" ry="10" fill="white"/>
+                    <Polygon points="30,80 50,100 70,80" fill="white"/>
                     <Image
-                        marginLeft={10}
-                        marginTop={10}
+                        marginLeft={5}
+                        marginTop={5}
                         width={100}
-                        height={60}
+                        height={50}
                         borderRadius={15}
                         overflow="hidden"
                         source={{uri: `http://49.13.85.200:8080/static/${hotspot.hotspot_id}/${hotspot.photos?.at(0)}`}}
                     />
                     <Text style={styles.titleStyle}>{hotspot.title}</Text>
-                    <Text style={styles.descriptionStyle} x="10" y="80" width={80}>{hotspot.description}</Text>
                 </Svg>
             </View>
         );

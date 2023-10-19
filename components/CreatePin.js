@@ -26,8 +26,6 @@ export default function CreatePin(props) {
     };
 
     const createPin = async (body) => {
-        // Check the distance between the user's location (props.coords) and the new pin's location (if entered)
-        // const distance =
         try {
             let req = {
                 ...requestOptions,
