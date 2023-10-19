@@ -6,9 +6,9 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function CreatePin(props) {
 
-  const [location, setlocation] = useState('');
-  const [description, setdescription] = useState('');
-  const sheetRef = useRef(null);
+    const [location, setLocation] = useState('');
+    const [description, setDescription] = useState('');
+    const sheetRef = useRef(null);
 
   const [image, setImage] = useState(null); // Stores the selected image URI   
   const [error, setError] = useState(null); // Stores any error message 
@@ -22,129 +22,115 @@ export default function CreatePin(props) {
     }
   }, [props.isOpen, sheetRef])
 
-  const requestOptions = { 
-    method: 'POST', 
-    headers: { 'Content-Type': 'application/json' }, 
+    const requestOptions = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
 
-  }; 
+    };
 
-  const postExample = async (body) => { 
-     try { 
-         req = {
-          ...requestOptions,
-          body: JSON.stringify(body) 
-         }
-         console.log(JSON.stringify(req))
-         await fetch("http://49.13.85.200:8080/hotspots", req) 
-             .then(response => { 
-                console.log(response)
-                response.text().then((text)=>{
-                  console.log(text)
-                })
-             }) 
-     } 
-     catch (error) { 
-         console.error(error); 
-     } 
- } 
-
-  // Function to pick an image from the device's media library 
-    const pickImage = async () => { 
-      const { status } = await ImagePicker. 
-          requestMediaLibraryPermissionsAsync(); 
-
-      if (status !== "granted") { 
-
-          // If permission is denied, show an alert 
-          Alert.alert( 
-              "Permission Denied", 
-              `Sorry, we need cameraroll permission to upload images.` 
-          ); 
-      } else { 
-
-          // Launch the image library and get the selected image 
-          let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Photo,
-            allowsMultipleSelection: true,
-            //allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-          });
-      
-          console.log(result);
-      
-          if (!result.canceled) { 
-            // If an image is selected (not cancelled) update the file state variable 
-            setImage(result.assets[0].uri);
-              
-            // Clear any previous errors 
-            setError(null); 
-          } 
-      } 
-  }; 
-
-  return (
-    <BottomSheet
-      ref={sheetRef}
-      index={-1}
-      snapPoints={[326]} 
-      borderRadius={10}
-      enablePanDownToClose
-      keyboardBlurBehavior={"restore"}
-      onClose={Keyboard.dismiss}
-    >
-      <View style={styles.bottomSheetContent}>
-
-        <Text style={styles.bottomSheetTitle}>Location*</Text>
-        <BottomSheetTextInput
-          style={styles.input}
-          placeholder="Enter Location "
-          value={location}
-          onChangeText={setlocation}
-        />
-        <Text style={styles.bottomSheetTitle}>Description</Text> 
-        <BottomSheetTextInput
-          style={styles.input}
-          placeholder="Enter some Description"
-          value={description}
-          onChangeText={setdescription}
-        />
-        <Text style={styles.bottomSheetTitle}>Add Photo*</Text>
-
-        <TouchableOpacity 
-          style={styles.panelButton} 
-          onPressIn={() => {
-            pickImage()
-            console.log('Choose from library pressed')
-            }}>
-            <Button title="Choose from library"/>
-            {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
-        </TouchableOpacity>
-
-        <View style={{flexDirection: 'row', justifyContent:'space-around'}}>
-          <TouchableOpacity style={styles.cancelButton} onPressIn={() => sheetRef.current.close()}>
-            <Text title="Cancel">Cancel</Text>
-          </TouchableOpacity> 
-
-          <TouchableOpacity 
-            style={styles.createButton} 
-            onPressIn={() => {
-              console.log(`1: ${location}, 2: ${description}, coords: ${props.coords.latitude}; ${props.coords.longitude}`)
-              postExample({
-                title: location,
-                description: description,
-                latitude: props.coords.latitude,
-                longitude: props.coords.longitude
-              })
-              }
+    const createPin = async (body) => {
+        // Check the distance between the user's location (props.coords) and the new pin's location (if entered)
+        // const distance =
+        try {
+            let req = {
+                ...requestOptions,
+                body: JSON.stringify(body)
             }
-          >
-            <Text title="Create">Create</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </BottomSheet>
-  )
+            console.log(JSON.stringify(req))
+            await fetch("http://49.13.85.200:8080/hotspots", req)
+                .then(response => {
+                    console.log(response)
+                    response.text().then((text) => {
+                        console.log(text)
+                    })
+                })
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const handleGalleryClick = () => {
+        launchImageLibrary(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            } else {
+                const source = {uri: response.uri};
+                this.setState({
+                    avatarSource: source,
+                });
+            }
+        });
+    };
+
+    return (
+        <BottomSheet
+            ref={sheetRef}
+            index={-1}
+            snapPoints={[326]}
+            borderRadius={10}
+            enablePanDownToClose
+            keyboardBlurBehavior={"restore"}
+            onClose={() => {
+                Keyboard.dismiss();
+                props.setIsOpen(false)
+            }}
+        >
+            <View style={styles.bottomSheetContent}>
+
+                <Text style={styles.bottomSheetTitle}>Location*</Text>
+                <BottomSheetTextInput
+                    style={styles.input}
+                    placeholder="Enter Location "
+                    value={location}
+                    onChangeText={setLocation}
+                />
+                <Text style={styles.bottomSheetTitle}>Description</Text>
+                <BottomSheetTextInput
+                    style={styles.input}
+                    placeholder="Enter some Description"
+                    value={description}
+                    onChangeText={setDescription}
+                />
+                <Text style={styles.bottomSheetTitle}>Add Photo*</Text>
+
+                <TouchableOpacity
+                    style={styles.panelButton}
+                    onPressIn={() => {
+                        this.handleGalleryClick
+                        console.log('Choose from library pressed')
+                    }}>
+                    <Button title="Choose from library"/>
+                </TouchableOpacity>
+
+                <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                    <TouchableOpacity style={styles.cancelButton} onPressIn={() => sheetRef.current.close()}>
+                        <Text title="Cancel">Cancel</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.createButton}
+                        onPressIn={() => {
+                            console.log(`1: ${location}, 2: ${description}, coords: ${props.coords.latitude}; ${props.coords.longitude}`)
+                            createPin({
+                                title: location,
+                                description: description,
+                                latitude: props.coords.latitude,
+                                longitude: props.coords.longitude
+                            })
+                            sheetRef.current.close()
+                        }
+                        }
+                    >
+                        <Text title="Create">Create</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </BottomSheet>
+    )
 }
 
 const styles = StyleSheet.create({
