@@ -4,24 +4,52 @@ import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useState } from 'react';
 import { installWebGeolocationPolyfill } from 'expo-location';
-import FlashMessage from "react-native-flash-message";
+import FlashMessage, {showMessage, hideMessage} from "react-native-flash-message";
 
 
 export default function App() {
   installWebGeolocationPolyfill()
 
-  const [createPinOpen, setCreatePinOpen] = useState(false)
-  const [createPinCoords, setCreatePinCoords] = useState(false)
+  const [createPinOpen, setCreatePinOpen] = useState(false);
+  const [createPinCoords, setCreatePinCoords] = useState(false);
+  const [hotspots, setHotspots] = useState([]);
 
+    const checkDistance = (lat1, lon1, lat2, lon2) => {
+        //Haversine formula
+        const earthRadius = 6371000;
+        const dLat = (lat2 - lat1) * (Math.PI / 180);
+        const dLon = (lon2 - lon1) * (Math.PI / 180);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = earthRadius * c;
+
+        return distance;
+    };
   const mapPressHandler = (event) => {
       console.log('Long pressed on map')
-      setCreatePinOpen(true)
-      setCreatePinCoords(event.nativeEvent.coordinate)
+      coords = event.nativeEvent.coordinate
+      ok = hotspots.every(hotspot => {
+          console.log(checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude))
+          return checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude) > 100;
+      })
+      if (ok) {
+        setCreatePinOpen(true)
+        setCreatePinCoords()
+      } else {
+          showMessage({
+              message:"Too close to existing hotspot",
+              type: "warning"
+          })
+          // setTimeout(hideMessage, 4000)
+      }
   }
 
   return(
     <GestureHandlerRootView style={{ ...StyleSheet.absoluteFillObject }}>
-      <Map longPressHandler={mapPressHandler}/>
+      <Map longPressHandler={mapPressHandler} hotspots={hotspots} setHotspots={setHotspots}/>
       <CreatePin isOpen={createPinOpen} setIsOpen={setCreatePinOpen} coords={createPinCoords}/>
       <FlashMessage position="bottom"/>
     </GestureHandlerRootView>

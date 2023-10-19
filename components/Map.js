@@ -8,7 +8,6 @@ import {showMessage, hideMessage} from "react-native-flash-message";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Map(props) {
-  const [hotspots, setHotspots] = useState([]);
   const [tvc, setTvc] = useState(false);
 
   useEffect(() => {
@@ -20,7 +19,7 @@ export default function Map(props) {
         }
         return response.json();
       })
-      .then(setHotspots)
+      .then(props.setHotspots)
       .catch(console.error);
   }, []);
 
@@ -34,13 +33,13 @@ export default function Map(props) {
           }
           return response.json();
         })
-        .then(setHotspots)
+        .then(props.setHotspots)
         .catch(console.error);
       // setTvc(true)
       setTimeout(()=>setTvc(false), 10)
     }, 10000)
     return () => {clearInterval(interval)}
-  }, [hotspots]);
+  }, [props.hotspots]);
 
   const [marker, setMarker] = useState(null);
   const map = useRef(null);
@@ -91,7 +90,7 @@ export default function Map(props) {
         }
 
         markerCoord.timing(newCoordinate).start();
-        hideMessage()
+        // hideMessage()
       },
       error => {
         if (error.code == 'E_LOCATION_SETTINGS_UNSATISFIED') {
@@ -168,7 +167,7 @@ const CustomMarker = memo(({ hotspot }) => {
         </Marker.Animated>
       ): null}
       {/* Map over the hotspots array and create a marker for each hotspot */}
-      {hotspots.map((hotspot, index) => (
+      {props.hotspots.map((hotspot, index) => (
         <Marker
           key={index}
           coordinate={{

@@ -23,9 +23,11 @@ export default function CreatePin(props) {
     method: 'POST', 
     headers: { 'Content-Type': 'application/json' }, 
 
-  }; 
+  };
 
-  const postExample = async (body) => { 
+  const createPin = async (body) => {
+    // Check the distance between the user's location (props.coords) and the new pin's location (if entered)
+    // const distance =
      try { 
          req = {
           ...requestOptions,
@@ -108,7 +110,7 @@ export default function CreatePin(props) {
             style={styles.createButton} 
             onPressIn={() => {
               console.log(`1: ${location}, 2: ${description}, coords: ${props.coords.latitude}; ${props.coords.longitude}`)
-              postExample({
+              createPin({
                 title: location,
                 description: description,
                 latitude: props.coords.latitude,
