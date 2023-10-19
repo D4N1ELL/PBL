@@ -129,28 +129,6 @@ export default function Map(props) {
         return () => clearInterval(interval)
     }, [hasPermission, hasLocation])
 
-
-    const CustomMarker = memo(({hotspot}) => {
-        return (
-            <View>
-                <Svg height="100" width="100">
-                    <Rect x="0" y="0" width="100" height="80" rx="10" ry="10" fill="white"/>
-                    <Polygon points="30,80 50,100 70,80" fill="white"/>
-                    <Image
-                        marginLeft={5}
-                        marginTop={5}
-                        width={100}
-                        height={50}
-                        borderRadius={15}
-                        overflow="hidden"
-                        source={{uri: `http://49.13.85.200:8080/static/${hotspot.hotspot_id}/${hotspot.photos?.at(0)}`}}
-                    />
-                    <Text style={styles.titleStyle}>{hotspot.title}</Text>
-                </Svg>
-            </View>
-        );
-    });
-
     return (
         <View style={styles.container}>
             <ClusteredMapView
@@ -188,7 +166,12 @@ export default function Map(props) {
                         zIndex={1000} // Set a higher zIndex for unclustered markers
                         onPress={props.onMarkerPress(hotspot)}
                     >
-                        <CustomMarker hotspot={hotspot}/>
+                      <Image
+                            source={require('../assets/Location-pin.png')}
+                            style={{
+                                width: 60,
+                                height: 60
+                            }}/>  
                     </Marker>
                 ))}
             </ClusteredMapView>

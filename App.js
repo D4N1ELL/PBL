@@ -5,7 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useState } from 'react';
 import { installWebGeolocationPolyfill } from 'expo-location';
 import FlashMessage, {showMessage} from "react-native-flash-message";
-import DetailedHotspot from './components/DetailedHotspot';
+import DetailedHotspot from './components/detailedhotspot';
 
 export default function App() {
     installWebGeolocationPolyfill()

@@ -19,6 +19,7 @@ export default function DetailedHotspot(props) {
     }
   }, [props.hotspot, sheetRef])
   
+  
 
   return ( 
     <BottomSheet
@@ -32,16 +33,19 @@ export default function DetailedHotspot(props) {
    
     > 
     { props.hotspot ? <BottomSheetView>
-      <Text>Awesome 🔥 {props.hotspot?.title}</Text>
+      <Text style={{ textAlign: 'center', fontSize: 24, fontWeight: 'bold', color: 'rgba(109, 27, 137, 1)' }}> {props.hotspot?.title}</Text>
+      <Text style={{ textAlign: 'left', fontSize: 18 }}> {props.hotspot?.description}</Text>
+      {/*Do not change width of the image, it is perfect*/}
       <Image
                         marginLeft={10}
                         marginTop={10}
-                        width={100}
-                        height={60}
+                        width = '30%'
+                        height={80}
                         borderRadius={15}
                         overflow="hidden"
                         source={{uri: `http://49.13.85.200:8080/static/${props.hotspot.hotspot_id}/${props.hotspot.photos?.at(0)}`}}
                     />
+                    
                     </BottomSheetView>
     : null }
       
