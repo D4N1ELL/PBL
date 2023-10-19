@@ -1,14 +1,14 @@
 import React, { useCallback, useState, useRef, useEffect, useMemo } from 'react';
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { View, Text, Button, StyleSheet} from 'react-native'; 
+import { View, Text, Button, StyleSheet, Image} from 'react-native'; 
 import MapView, { Marker } from 'react-native-maps';
 
 export default function DetailedHotspot(props) {
 
   const sheetRef = useRef(null);
 
-  const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
+  // const snapPoints = useMemo(() => , []);
   
   useEffect(()=>{
     console.log(props.hotspot)
@@ -20,26 +20,34 @@ export default function DetailedHotspot(props) {
   }, [props.hotspot, sheetRef])
   
 
-  return (
-    <View style = {styles.bottomSheetContent}>
+  return ( 
     <BottomSheet
       ref={sheetRef}
       index={-1}
-      snapPoints={snapPoints}
+      snapPoints={['25%', '50%', '75%']}
       borderRadius={10}
       enablePanDownToClose
       keyboardBlurBehavior={"restore"}
       onClose={()=>props.setHotspot(null)}
    
-    >
-      <BottomSheetView>
+    > 
+    { props.hotspot ? <BottomSheetView>
       <Text>Awesome 🔥 {props.hotspot?.title}</Text>
-      </BottomSheetView>
+      <Image
+                        marginLeft={10}
+                        marginTop={10}
+                        width={100}
+                        height={60}
+                        borderRadius={15}
+                        overflow="hidden"
+                        source={{uri: `http://49.13.85.200:8080/static/${props.hotspot.hotspot_id}/${props.hotspot.photos?.at(0)}`}}
+                    />
+                    </BottomSheetView>
+    : null }
       
     
         {/* <Button title="Test Button" onPress={() => console.log("Test button pressed")} /> */}
         </BottomSheet>
-      </View>
   );};
   
   const styles = StyleSheet.create({
