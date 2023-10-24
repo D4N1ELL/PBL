@@ -15,10 +15,10 @@
     "expo-status-bar": "~1.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-native": "0.72.5",
+    "react-native": "0.72.6",
     "react-native-cluster-map": "^1.0.9",
     "react-native-flash-message": "^0.4.2",
-    "react-native-gesture-handler": "^2.13.3",
+    "react-native-gesture-handler": "~2.12.0",
     "react-native-image-picker": "^7.0.1",
     "react-native-map-clustering": "^3.4.2",
     "react-native-maps": "1.7.1",
@@ -28,7 +28,8 @@
     "react-native-webview": "13.2.2",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
-    "expo-image-picker": "~14.3.2"
+    "expo-image-picker": "~14.3.2",
+    "expo-image-manipulator": "~11.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",

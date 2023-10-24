@@ -30,7 +30,6 @@ export default function App() {
         console.log('Long pressed on map')
         let coords = event.nativeEvent.coordinate
         let ok = hotspots.every(hotspot => {
-            console.log(checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude))
             return checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude) > 100;
         })
         if (ok) {

@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler'
 import React, {memo, useEffect, useRef, useState} from 'react';
-import MapView, {AnimatedRegion, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import {AnimatedRegion, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from "expo-location"
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Polygon, Rect, Svg} from 'react-native-svg';
@@ -36,8 +36,8 @@ export default function Map(props) {
                 })
                 .then(props.setHotspots)
                 .catch(console.error);
-            // setTvc(true)
-            setTimeout(() => setTvc(false), 10)
+            setTvc(true)
+            // setTimeout(() => setTvc(false), 200)
         }, 10000)
         return () => {
             clearInterval(interval)
@@ -160,6 +160,7 @@ export default function Map(props) {
                 onLongPress={props.longPressHandler}
                 ref={map}
                 toolbarEnabled={false}
+                showsUserLocation={hasLocation && hasPermission}
                 initialRegion={{
                     latitude: 47.04,
                     longitude: 28.86,
@@ -169,6 +170,7 @@ export default function Map(props) {
                 {(hasPermission && hasLocation) ? (
                     <Marker.Animated
                         coordinate={markerCoord}>
+                            <Text>aaaaaaaaaaaa</Text>
                         <Image
                             source={require('../assets/location.png')}
                             style={{
