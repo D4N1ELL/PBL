@@ -72,7 +72,7 @@ export default function CreatePin(props) {
     }; 
 
     const createPin = async (body) => {
-        if (id == "Empty title" && images == null || images == null || id == "Empty title") {
+        if ((body.title == "Empty title" && images == null) || images == null || body.title == "Empty title") {
             return (
                 console.log('Unable to create pin error'),
                 Alert.alert('Unable to create pin', 'Check Location and add photo fields', [
@@ -82,8 +82,6 @@ export default function CreatePin(props) {
                 ])
             )
         } else {
-            // Check the distance between the user's location (props.coords) and the new pin's location (if entered)
-            // const distance =
             try {
                 let req = {
                 ...createPinRequestOptions,
@@ -168,7 +166,7 @@ export default function CreatePin(props) {
                                 <Button title="+"/>
                             </TouchableOpacity>
 
-                            {images?.map((image)=><Image source={{ uri: image }} style={{width: 100, height: 100}} key={image}/>)}
+                            {images?.map((image)=><Image source={{ uri: image }} style={{width: '30%', height: 100}} key={image}/>)}
                     </ScrollView>
                 </View>
                 
@@ -213,16 +211,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginBottom: 10,
-    },  
-    // imageContainer: { 
-    //     borderRadius: 8, 
-    //     marginBottom: 16, 
-    //     shadowColor: "#000000", 
-    //     shadowOffset: { width: 0, height: 2 }, 
-    //     shadowOpacity: 0.4, 
-    //     shadowRadius: 4, 
-    //     elevation: 5, 
-    // },
+    },
     input: {
         borderColor: 'gray',
         borderWidth: 1,
@@ -238,7 +227,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'skyblue',
         color: 'black',
         width: 100, 
-        height: 100
+        height: 120
     },
     cancelButton: {
         padding: 10,
