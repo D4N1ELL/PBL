@@ -166,7 +166,7 @@ export default function CreatePin(props) {
                                 <Button title="+"/>
                             </TouchableOpacity>
 
-                            {images?.map((image)=><Image source={{ uri: image }} style={{width: 100, height: 100}} key={image}/>)}
+                            {images?.map((image)=><Image source={{ uri: image }} style={{width: '30%', height: 100}} key={image}/>)}
                     </ScrollView>
                 </View>
                 

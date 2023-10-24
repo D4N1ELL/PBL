@@ -3,6 +3,9 @@ import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { View, Text, Button, StyleSheet, Image} from 'react-native'; 
 import MapView, { Marker } from 'react-native-maps';
+import * as ImagePicker from 'expo-image-picker';
+import { manipulateAsync } from 'expo-image-manipulator';
+import { Alert } from 'react-native';
 
 export default function DetailedHotspot(props) {
 
@@ -47,15 +50,83 @@ export default function DetailedHotspot(props) {
             ))}
           </View>
         ))}
-        <TouchableOpacity>
-        <View style={styles.buttonContainer}>
-          <Text style={styles.buttonText}>Add photos</Text>
-        </View>
+        <TouchableOpacity onPress={handleAddPhotoPress}>
+          <View style={styles.buttonContainer}>
+            <Text style={styles.buttonText}>Add photos</Text>
+          </View>
         </TouchableOpacity>
       </View>
     );
   };
-  
+  const addPhotoToMarker = async (markerId) => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      // If permission is denied, show an alert
+      Alert.alert(
+        "Permission Denied",
+        "Sorry, we need cameraroll permission to upload images."
+      );
+    } else {
+      try {
+        // Launch the image library and get the selected assets
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Photo,
+          allowsMultipleSelection: true, // Allow multiple images to be selected
+          // allowsEditing: true,
+          // aspect: [4, 3],
+          quality: 0,
+        });
+
+        if (!result.canceled) {
+          const selectedAssets = result.assets; // Get the selected assets
+
+          for (const selectedAsset of selectedAssets) {
+            const imageUri = selectedAsset.uri;
+
+            // You can access other properties like width, height, etc., from selectedAsset
+
+            // The rest of your code to upload each image remains the same
+            // ...
+
+            const uriArray = imageUri.split(".");
+            const fileType = uriArray[uriArray.length - 1];
+            const name = imageUri.split('/').at(-1);
+
+            const formData = new FormData();
+            formData.append("file", {
+              uri: imageUri,
+              name: name,
+              type: `image/${fileType}`,
+            });
+
+            const response = await fetch(`http://49.13.85.200:8080/hotspots/${markerId}`, {
+              method: 'POST',
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+              body: formData,
+            });
+
+            if (response.status === 200) {
+              // Photo added successfully
+              console.log("Photo added to marker with ID", markerId);
+            } else {
+              console.error("Error adding photo to marker:", response.status);
+              // Handle the error as needed
+            }
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        // Handle any errors that occur during the process
+      }
+    }
+  };
+
+  const handleAddPhotoPress = () => {
+    addPhotoToMarker(props.hotspot.hotspot_id);
+  };
 
   return ( 
     <BottomSheet
