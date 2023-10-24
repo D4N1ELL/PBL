@@ -3,7 +3,6 @@ import React, {memo, useEffect, useRef, useState} from 'react';
 import MapView, {AnimatedRegion, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from "expo-location"
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Polygon, Rect, Svg} from 'react-native-svg';
 import {showMessage} from "react-native-flash-message";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ClusteredMapView from 'react-native-map-clustering'; // Import ClusteredMapView

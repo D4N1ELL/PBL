@@ -39,7 +39,7 @@ export default function DetailedHotspot(props) {
       <Image
                         marginLeft={10}
                         marginTop={10}
-                        width = '30%'
+                        width = {120}
                         height={80}
                         borderRadius={15}
                         overflow="hidden"
