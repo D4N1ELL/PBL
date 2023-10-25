@@ -4,6 +4,7 @@ import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { View, Keyboard, Text, Button, StyleSheet, Image, Platform, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { manipulateAsync } from 'expo-image-manipulator';
+import { Linking } from 'react-native';
 
 export default function CreatePin(props) {
 
@@ -37,11 +38,16 @@ export default function CreatePin(props) {
 
         if (status !== "granted") { 
 
-          // If permission is denied, show an alert 
-            Alert.alert( 
-                "Permission Denied", 
-                `Sorry, we need cameraroll permission to upload images.` 
-            ); 
+          // If permission is denied, show an alert
+            Alert.alert("Permission Denied", `Sorry, we need cameraroll permission to upload images.`, [
+                {text: 'OK'},
+                {text: 'Settings', onPress: () => { Linking.openURL('app-settings:') }},
+            ])
+            // Alert.alert( 
+            //     "Permission Denied", 
+            //     `Sorry, we need cameraroll permission to upload images.` 
+            // );
+             
         } else { 
 
             // Launch the image library and get the selected image 
@@ -75,7 +81,7 @@ export default function CreatePin(props) {
         if ((body.title == "Empty title" && images == null) || images == null || body.title == "Empty title") {
             return (
                 console.log('Unable to create pin error'),
-                Alert.alert('Unable to create pin', 'Check Location and add photo fields', [
+                Alert.alert('Unable to create pin', 'Check Location and Add photo fields', [
                     {
                       text: 'OK'
                     },
@@ -155,7 +161,7 @@ export default function CreatePin(props) {
                 />
                 <Text style={styles.bottomSheetTitle}>Add Photo*</Text>
 
-                <View style={styles.addPhotoScroll}>
+                <View >
                     <ScrollView style={styles.scrollView} horizontal = {true}>
                             <TouchableOpacity
                                 style={styles.addPhotoButton}
@@ -165,8 +171,11 @@ export default function CreatePin(props) {
                                 }}>
                                 <Button title="+"/>
                             </TouchableOpacity>
-
-                            {images?.map((image)=><Image source={{ uri: image }} style={{width: '30%', height: 100}} key={image}/>)}
+                            <View style={styles.addPhotoScroll}>
+                                {images?.map((image)=><Image source={{ uri: image }} 
+                                style={{width: 100, height: 100, justifyContent: 'space-around',}}
+                                key={image}/>)}
+                            </View>
                     </ScrollView>
                 </View>
                 
@@ -254,10 +263,8 @@ const styles = StyleSheet.create({
     },
     addPhotoScroll: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        // 
         alignItems: 'center',
-        justifyContent: 'center',
-
     },
     
 });

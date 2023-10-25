@@ -13,35 +13,6 @@ export default function App() {
     const [createPinOpen, setCreatePinOpen] = useState(false);
     const [createPinCoords, setCreatePinCoords] = useState(false);
     const [hotspots, setHotspots] = useState([]);
-
-    const checkDistance = (lat1, lon1, lat2, lon2) => {
-        //Haversine formula
-        const earthRadius = 6371000;
-        const dLat = (lat2 - lat1) * (Math.PI / 180);
-        const dLon = (lon2 - lon1) * (Math.PI / 180);
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return earthRadius * c;
-    };
-    const mapPressHandler = (event) => {
-        console.log('Long pressed on map')
-        let coords = event.nativeEvent.coordinate
-        let ok = hotspots.every(hotspot => {
-            return checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude) > 100;
-        })
-        if (ok) {
-            setCreatePinOpen(true)
-            setCreatePinCoords(coords)
-        } else {
-            showMessage({
-                message: "Too close to existing hotspot",
-                type: "warning"
-            })
-        }
-    }
     const [selectedHotspot, setSelectedHotspot] = useState(null);
 
     const checkDistance = (lat1, lon1, lat2, lon2) => {
