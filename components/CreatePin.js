@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { View, Keyboard, Text, Button, StyleSheet, Image, Platform, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { manipulateAsync } from 'expo-image-manipulator';
 import { Linking } from 'react-native';
 
@@ -56,7 +57,7 @@ export default function CreatePin(props) {
                 allowsMultipleSelection: true,
                 // allowsEditing: true,
                 //aspect: [4, 3],
-                quality: 0,
+                quality: 0.5,
             });
         
             if (!result.canceled) { 
@@ -80,7 +81,7 @@ export default function CreatePin(props) {
     const createPin = async (body) => {
         if ((body.title == "Empty title" && images == null) || images == null || body.title == "Empty title") {
             return (
-                console.log('Unable to create pin error'),
+                //console.log('Unable to create pin error'),
                 Alert.alert('Unable to create pin', 'Check Location and Add photo fields', [
                     {
                       text: 'OK'
@@ -93,18 +94,18 @@ export default function CreatePin(props) {
                 ...createPinRequestOptions,
                     body: JSON.stringify(body) 
                 }
-                console.log(JSON.stringify(req))
+                //console.log(JSON.stringify(req))
                 response = await fetch("http://49.13.85.200:8080/hotspots", req)
                 id = await response.text()
 
-                console.log("id", id)
-                console.log(images)
+                //console.log("id", id)
+                //console.log(images)
 
                 for (let image of images) {
                     let uriArray = image.split(".");
                     let fileType = uriArray[uriArray.length - 1];
                     let name = image.split('/').at(-1)
-                    console.log(name)
+                    //console.log(name)
                     const formData  = new FormData();
                     formData.append("file", {
                         uri: image,
@@ -119,7 +120,7 @@ export default function CreatePin(props) {
                         },
                         body: formData
                     });
-                    console.log(response)
+                    //console.log(JSON.stringify(response))
                 }
             } catch (error) {
                 console.error(error);
@@ -167,9 +168,9 @@ export default function CreatePin(props) {
                                 style={styles.addPhotoButton}
                                 onPressIn={() => {
                                     pickImage()
-                                    console.log('Choose from library pressed')
+                                    //console.log('Choose from library pressed')
                                 }}>
-                                <Button title="+"/>
+                                <Icon name="plus" size={30} color="#000"/>
                             </TouchableOpacity>
                             <View style={styles.addPhotoScroll}>
                                 {images?.map((image)=><Image source={{ uri: image }} 
@@ -190,7 +191,7 @@ export default function CreatePin(props) {
                     <TouchableOpacity
                         style={styles.createButton}
                         onPressIn={() => {
-                            console.log(`1: ${location}, 2: ${description}, coords: ${props.coords.latitude}; ${props.coords.longitude}`)
+                            //console.log(`1: ${location}, 2: ${description}, coords: ${props.coords.latitude}; ${props.coords.longitude}`)
                             createPin({
                                 title: location,
                                 description: description,

@@ -14,7 +14,7 @@ export default function DetailedHotspot(props) {
   // const snapPoints = useMemo(() => , []);
   
   useEffect(()=>{
-    console.log(props.hotspot)
+    //console.log(props.hotspot)
     if (props.hotspot) {
       sheetRef.current.snapToIndex(0)
     } else {
@@ -41,10 +41,10 @@ export default function DetailedHotspot(props) {
           <View key={rowIndex} style={styles.row}>
             {row.map((image, index) => (
               <Image
-                key={index}
+                key={rowIndex*3+index}
                 style={styles.image}
                 source={{
-                  uri: `http://49.13.85.200:8080/static/${props.hotspot.hotspot_id}/${props.hotspot.photos?.at(index)}`,
+                  uri: `http://49.13.85.200:8080/static/${props.hotspot.hotspot_id}/${props.hotspot.photos?.at(rowIndex*3+index)}`,
                 }}
               />
             ))}
@@ -110,7 +110,7 @@ export default function DetailedHotspot(props) {
 
             if (response.status === 200) {
               // Photo added successfully
-              console.log("Photo added to marker with ID", markerId);
+              //console.log("Photo added to marker with ID", markerId);
             } else {
               console.error("Error adding photo to marker:", response.status);
               // Handle the error as needed
@@ -165,6 +165,7 @@ export default function DetailedHotspot(props) {
       height: '500%',
       width: '30%',
       marginTop: 10,
+      marginLeft:10,
       borderRadius: 7,
       marginHorizontal: 5,
       marginVertical: 8,
@@ -180,8 +181,9 @@ export default function DetailedHotspot(props) {
     },
     row: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
       marginBottom: 90,
+      paddingRight:10
     },
     buttonContainer:{
       

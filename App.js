@@ -8,6 +8,8 @@ import FlashMessage, {showMessage} from "react-native-flash-message";
 import DetailedHotspot from './components/detailedhotspot';
 
 export default function App() {
+    console.disableYellowBox = true
+    console.reportErrorAsException = false
     installWebGeolocationPolyfill()
 
     const [createPinOpen, setCreatePinOpen] = useState(false);
@@ -28,10 +30,10 @@ export default function App() {
       return earthRadius * c;
   };
   const mapPressHandler = (event) => {
-      console.log('Long pressed on map')
+      //console.log('Long pressed on map')
       let coords = event.nativeEvent.coordinate
       let ok = hotspots.every(hotspot => {
-          console.log(checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude))
+          //console.log(checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude))
           return checkDistance(coords.latitude, coords.longitude, hotspot.latitude, hotspot.longitude) > 100;
       })
       if (ok) {
@@ -46,7 +48,7 @@ export default function App() {
   }
 
     const markerPressHandler = (hotspot) => (event) => {
-      console.log('Pressed on marker')
+      //console.log('Pressed on marker')
       setSelectedHotspot(hotspot)
   }
     return (
