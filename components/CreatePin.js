@@ -1,7 +1,7 @@
 import BottomSheet, {BottomSheetTextInput} from '@gorhom/bottom-sheet'
 import React, { useState, useRef, useEffect } from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { View, Keyboard, Text, Button, StyleSheet, Image, Platform, Alert } from 'react-native';
+import { View, Keyboard, Text, StyleSheet, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { manipulateAsync } from 'expo-image-manipulator';
@@ -44,10 +44,6 @@ export default function CreatePin(props) {
                 {text: 'OK'},
                 {text: 'Settings', onPress: () => { Linking.openURL('app-settings:') }},
             ])
-            // Alert.alert( 
-            //     "Permission Denied", 
-            //     `Sorry, we need cameraroll permission to upload images.` 
-            // );
              
         } else { 
 

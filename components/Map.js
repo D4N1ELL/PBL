@@ -1,4 +1,4 @@
-import 'react-native-gesture-handler'
+import 'react-native-gesture-handler';
 import React, {memo, useEffect, useRef, useState} from 'react';
 import {AnimatedRegion, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Location from "expo-location"
