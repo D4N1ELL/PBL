@@ -8,6 +8,7 @@ import { manipulateAsync } from 'expo-image-manipulator';
 import { Linking } from 'react-native';
 
 export default function CreatePin(props) {
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDE4NjQxMDYsImlhdCI6MTcwMTg2MDUwNiwic3ViIjoiMSJ9.L_m0Ii7tYG0ZCCeZxF8yCbTFJVYKjbKMVJilLPt2G40"   
 
     const [location, setLocation] = useState('');
     const [description, setDescription] = useState('');
@@ -29,7 +30,7 @@ export default function CreatePin(props) {
 
     const createPinRequestOptions = {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', "Authorization": `Bearer ${token}`},
     };
 
     // Function to pick an image from the device's media library 
@@ -108,15 +109,15 @@ export default function CreatePin(props) {
                         name: `${name}`,
                         type: `image/${fileType}`,
                     })
-                        
                     response = await fetch(`http://49.13.85.200:8080/hotspots/${id}`, {
                         method: 'POST',
                         headers: {
                             "Content-Type": "multipart/form-data",
+                            "Authorization": `Bearer ${token}`
                         },
                         body: formData
                     });
-                    //console.log(JSON.stringify(response))
+                    console.log(JSON.stringify(response))
                 }
             } catch (error) {
                 console.error(error);
@@ -143,6 +144,7 @@ export default function CreatePin(props) {
             <View style={styles.bottomSheetContent}>
 
                 <Text style={styles.bottomSheetTitle}>Location*</Text>
+
                 <BottomSheetTextInput
                     style={styles.input}
                     placeholder="Enter Location "
@@ -150,6 +152,7 @@ export default function CreatePin(props) {
                     onChangeText={setLocation}
                 />
                 <Text style={styles.bottomSheetTitle}>Description</Text>
+
                 <BottomSheetTextInput
                     style={styles.input}
                     placeholder="Enter some Description"
@@ -164,7 +167,6 @@ export default function CreatePin(props) {
                                 style={styles.addPhotoButton}
                                 onPressIn={() => {
                                     pickImage()
-                                    //console.log('Choose from library pressed')
                                 }}>
                                 <Icon name="plus" size={30} color="#000"/>
                             </TouchableOpacity>
@@ -202,6 +204,7 @@ export default function CreatePin(props) {
                         <Text title="Create">Create</Text>
                     </TouchableOpacity>
                 </View>
+                
             </View>
         </BottomSheet>
     )
