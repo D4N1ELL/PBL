@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, StyleSheet, KeyboardAvoidingView, Text, Platform, TouchableOpacity } from "react-native";
-
+import { useNavigation } from "@react-navigation/native";
+import { jwtDecode } from "jwt-decode";
+import { decode as base64Decode } from 'base-64';
 const LoginForm = () => {
+  const navigation = useNavigation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,6 +34,17 @@ const LoginForm = () => {
       setPassword("");
       setErrors({});
     }
+  };
+
+  const ProfilePage = ({ route }) => {
+    const { username } = route.params;
+  
+    return (
+      <View>
+        <Text>Welcome!</Text>
+        {/* Other profile screen content */}
+      </View>
+    );
   };
 
   return (
@@ -76,7 +90,17 @@ const LoginForm = () => {
                       }) 
                   }
                   response = await fetch("http://49.13.85.200:8080/login", req)
-                  console.log(await response.text())
+
+                  if (response.ok) {
+                      //console.log(await response);
+                      //console.log(await response.text());
+                      navigation.navigate("Profile");
+                    } 
+                    
+                   else {
+                    console.error("Login failed:", response.error); // Handle login failure
+                  }
+
                   handleSubmit()
                 }}>
                     <Text style={styles.loginText}>LogIn</Text> 
@@ -110,6 +134,7 @@ const LoginForm = () => {
     </KeyboardAvoidingView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -165,7 +190,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'green',
     color: 'white',
     borderRadius: 30
-  }
+  },
 });
 
 export default LoginForm;
