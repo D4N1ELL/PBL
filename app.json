@@ -21,17 +21,25 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSPhotoLibraryAddUsageDescription": "Give Expo experiences permission to save photos"
-      },
-      
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.niksays.pefe"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "62635c86-f4d2-4d8c-8906-8d70c57ee7b3"
+      }
     }
   },
   "android": {
