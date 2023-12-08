@@ -137,6 +137,7 @@ export default function Map(props) {
                 ref={map}
                 toolbarEnabled={false}
                 showsUserLocation={hasLocation && hasPermission}
+                showsMyLocationButton={false}
                 initialRegion={{
                     latitude: 47.04,
                     longitude: 28.86,

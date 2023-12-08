@@ -7,6 +7,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useState } from 'react';
 import { installWebGeolocationPolyfill } from 'expo-location';
 import FlashMessage, {showMessage} from "react-native-flash-message";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 export default function RenderMap() {
@@ -31,7 +33,17 @@ export default function RenderMap() {
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return earthRadius * c;
   };
-  const mapPressHandler = (event) => {
+  const mapPressHandler = async (event) => {
+    event.persist()
+    console.log(await AsyncStorage.getItem('jwtToken'))
+    if (await AsyncStorage.getItem('jwtToken') == null) {
+        showMessage({
+            message: "Not logged in",
+            type: "warning"
+        })
+        setCreatePinOpen(false)
+        return
+    }
       //console.log('Long pressed on map')
       let coords = event.nativeEvent.coordinate
       let ok = hotspots.every(hotspot => {

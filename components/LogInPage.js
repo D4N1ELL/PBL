@@ -1,17 +1,26 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, StyleSheet, KeyboardAvoidingView, Text, Platform, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { jwtDecode } from "jwt-decode";
-import { decode as base64Decode } from 'base-64';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {showMessage} from "react-native-flash-message";
+
 const LoginForm = () => {
   const navigation = useNavigation();
   const [isLogin, setIsLogin] = useState(true);
+  const [hasToken, setHasToken] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  
+  AsyncStorage.getItem('jwtToken').then(token => {
+    if (token != null) {
+      setHasToken(true)
+    }
+  })
 
   const handleLoginRegisterToggle = () => {
     setIsLogin(!isLogin);
+    setHasToken(false)
     setEmail('');
     setPassword('');
   };
@@ -36,16 +45,98 @@ const LoginForm = () => {
     }
   };
 
-  const ProfilePage = ({ route }) => {
-    const { username } = route.params;
-  
-    return (
+  const loginFormView = ( <View style={styles.form}>
+        
+    <Text style={styles.label}>Email</Text>
+    <TextInput
+      style={styles.input}
+      placeholder="Enter your email"
+      value={email}
+      onChangeText={setEmail}
+    />
+    {errors.email ? (
+      <Text style={styles.errorText}>{errors.email}</Text>
+    ) : null}
+
+    <Text style={styles.label}>Password</Text>
+    <TextInput
+      style={styles.input}
+      placeholder="Enter your password"
+      value={password}
+      onChangeText={setPassword}
+      secureTextEntry
+    />
+    {errors.password ? (
+      <Text style={styles.errorText}>{errors.password}</Text>
+    ) : null}
+    
       <View>
-        <Text>Welcome!</Text>
-        {/* Other profile screen content */}
+        {isLogin ? (
+            <TouchableOpacity style={styles.loginBtn}
+            onPress={async() => {
+              let req = {
+                  method:"POST",
+                  body: JSON.stringify({
+                    login: email,
+                    password
+                  }) 
+              }
+              response = await fetch("http://49.13.85.200:8080/login", req)
+
+              if (response.ok) {
+                  navigation.navigate("Map");
+                  await AsyncStorage.setItem('jwtToken', await response.json());
+                  setHasToken(true)
+                } 
+                
+              else {
+                showMessage({
+                  message: "Failed to login",
+                  type: "warning"
+                })
+                console.error("Login failed"); // Handle login failure
+              }
+
+              handleSubmit()
+            }}>
+                <Text style={styles.loginText}>LogIn</Text> 
+            </TouchableOpacity>
+        ) : (
+            <TouchableOpacity style={styles.registerBtn}
+            onPress={async() => {
+              let req = {
+                  method:"POST",
+                  body: JSON.stringify({
+                    login: email,
+                    password
+                  }) 
+              }
+              response = await fetch("http://49.13.85.200:8080/signup", req)
+              console.log(await response.text())
+              handleSubmit()
+            }}>           
+                <Text style={styles.loginText}>Register</Text> 
+            </TouchableOpacity>
+        )}
+
+        <Button style={styles.switchButton}
+            title={isLogin ? 'Switch to Register' : 'Switch to Login'}
+            onPress={handleLoginRegisterToggle}
+        />
+
       </View>
-    );
-  };
+      
+  </View>) 
+
+    const logoutFormView = ( <View style={styles.form}>
+              <TouchableOpacity style={styles.loginBtn}
+              onPress={async() => {
+                await AsyncStorage.removeItem('jwtToken');
+                setHasToken(false)
+              }}>
+                  <Text style={styles.loginText}>LogOut</Text> 
+              </TouchableOpacity>
+              </View>) 
 
   return (
     <KeyboardAvoidingView
@@ -53,84 +144,8 @@ const LoginForm = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       style={styles.container}
     >
-      <View style={styles.form}>
-        
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          value={email}
-          onChangeText={setEmail}
-        />
-        {errors.email ? (
-          <Text style={styles.errorText}>{errors.email}</Text>
-        ) : null}
-
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        {errors.password ? (
-          <Text style={styles.errorText}>{errors.password}</Text>
-        ) : null}
-        
-          <View>
-            {isLogin ? (
-                <TouchableOpacity style={styles.loginBtn}
-                onPress={async() => {
-                  let req = {
-                      method:"POST",
-                      body: JSON.stringify({
-                        login: email,
-                        password
-                      }) 
-                  }
-                  response = await fetch("http://49.13.85.200:8080/login", req)
-
-                  if (response.ok) {
-                      //console.log(await response);
-                      //console.log(await response.text());
-                      navigation.navigate("Profile");
-                    } 
-                    
-                   else {
-                    console.error("Login failed:", response.error); // Handle login failure
-                  }
-
-                  handleSubmit()
-                }}>
-                    <Text style={styles.loginText}>LogIn</Text> 
-                </TouchableOpacity>
-            ) : (
-                <TouchableOpacity style={styles.registerBtn}
-                onPress={async() => {
-                  let req = {
-                      method:"POST",
-                      body: JSON.stringify({
-                        login: email,
-                        password
-                      }) 
-                  }
-                  response = await fetch("http://49.13.85.200:8080/signup", req)
-                  console.log(await response.text())
-                  handleSubmit()
-                }}>           
-                    <Text style={styles.loginText}>Register</Text> 
-                </TouchableOpacity>
-            )}
-
-            <Button style={styles.switchButton}
-                title={isLogin ? 'Switch to Register' : 'Switch to Login'}
-                onPress={handleLoginRegisterToggle}
-            />
-
-          </View>
-          
-      </View>
+    {hasToken?
+    logoutFormView: loginFormView}
     </KeyboardAvoidingView>
   );
 };

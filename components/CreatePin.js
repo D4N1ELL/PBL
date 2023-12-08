@@ -6,10 +6,11 @@ import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { manipulateAsync } from 'expo-image-manipulator';
 import { Linking } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {showMessage} from "react-native-flash-message";
+
 
 export default function CreatePin(props) {
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDE4NjQxMDYsImlhdCI6MTcwMTg2MDUwNiwic3ViIjoiMSJ9.L_m0Ii7tYG0ZCCeZxF8yCbTFJVYKjbKMVJilLPt2G40"   
-
     const [location, setLocation] = useState('');
     const [description, setDescription] = useState('');
     const sheetRef = useRef(null);
@@ -26,12 +27,7 @@ export default function CreatePin(props) {
         setDescription("")
         setLocation("")
         }
-    }, [props.isOpen, sheetRef])
-
-    const createPinRequestOptions = {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json', "Authorization": `Bearer ${token}`},
-    };
+    }, [props.isOpen, sheetRef]);
 
     // Function to pick an image from the device's media library 
     const pickImage = async () => { 
@@ -87,11 +83,11 @@ export default function CreatePin(props) {
             )
         } else {
             try {
-                let req = {
-                ...createPinRequestOptions,
+                let req = { 
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', "Authorization": `Bearer ${await AsyncStorage.getItem('jwtToken')}`},
                     body: JSON.stringify(body) 
                 }
-                //console.log(JSON.stringify(req))
                 response = await fetch("http://49.13.85.200:8080/hotspots", req)
                 id = await response.text()
 
@@ -113,11 +109,17 @@ export default function CreatePin(props) {
                         method: 'POST',
                         headers: {
                             "Content-Type": "multipart/form-data",
-                            "Authorization": `Bearer ${token}`
+                            "Authorization": `Bearer ${await AsyncStorage.getItem('jwtToken')}`
                         },
                         body: formData
                     });
                     console.log(JSON.stringify(response))
+                    if (!response.ok) {
+                      showMessage({
+                        message: "Failed to create pin",
+                        type: "warning"
+                      })
+                    }
                 }
             } catch (error) {
                 console.error(error);

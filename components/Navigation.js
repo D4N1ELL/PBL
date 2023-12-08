@@ -4,7 +4,6 @@ import { Ionicons } from "@expo/vector-icons";
 
 import RenderMap from './RenderMap';
 import LogInPage from './LogInPage';
-import ProfilePage from './ProfilePage';
 const Tab = createBottomTabNavigator();
 
 function TabGroup() {
@@ -17,9 +16,7 @@ function TabGroup() {
                         iconName = focused? "map" : "map-outline";
                     } else if (route. name === "Account"){
                         iconName = focused? "person" : "person-outline";
-                    } else if (route.name === "Profile") {
-                        iconName = focused ? "person" : "person-outline";
-                    }
+                    } 
 
                     return <Ionicons name={iconName} size={size} color={color} />
                 },
@@ -28,7 +25,6 @@ function TabGroup() {
 
             <Tab.Screen name="Map" component={RenderMap}/>
             <Tab.Screen name="Account" component={LogInPage}/>
-            <Tab.Screen name="Profile" component={ProfilePage} />
         </Tab.Navigator>
     )
     
