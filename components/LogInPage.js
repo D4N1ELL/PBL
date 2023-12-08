@@ -91,7 +91,7 @@ const LoginForm = () => {
                         password
                       }) 
                   }
-                  response = await fetch("http://49.13.85.200:8080/register", req)
+                  response = await fetch("http://49.13.85.200:8080/signup", req)
                   console.log(await response.text())
                   handleSubmit()
                 }}>           
