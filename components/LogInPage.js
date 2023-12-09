@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, StyleSheet, KeyboardAvoidingView, Text, Platform, TouchableOpacity } from "react-native";
 
-const LoginForm = () => {
+const LoginForm = ({navigation}) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -78,7 +78,8 @@ const LoginForm = () => {
                   response = await fetch("http://49.13.85.200:8080/login", req)
                   console.log(await response.text())
                   handleSubmit()
-                }}>
+                }}
+                >
                     <Text style={styles.loginText}>LogIn</Text> 
                 </TouchableOpacity>
             ) : (
